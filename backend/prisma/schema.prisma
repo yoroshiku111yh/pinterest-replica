@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model album {
+  id          Int       @default(autoincrement())
+  user_id     Int
+  image_id    Int
+  name_album  String    @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "album_ibfk_1")
+  images      images    @relation(fields: [image_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "album_ibfk_2")
+
+  @@id([id, user_id, image_id])
+  @@index([image_id], map: "image_id")
+  @@index([user_id], map: "user_id")
+}
+
+model comment {
+  id        Int       @id @default(autoincrement())
+  user_id   Int
+  image_id  Int
+  content   String    @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_1")
+  images    images    @relation(fields: [image_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_2")
+
+  @@index([image_id], map: "image_id")
+  @@index([user_id], map: "user_id")
+}
+
+model following {
+  user_id                             Int
+  following_id                        Int
+  createdAt                           DateTime? @default(now()) @db.DateTime(0)
+  users_following_user_idTousers      users     @relation("following_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "following_ibfk_1")
+  users_following_following_idTousers users     @relation("following_following_idTousers", fields: [following_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "following_ibfk_2")
+
+  @@id([user_id, following_id])
+  @@index([following_id], map: "following_id")
+}
+
+model images {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  description     String?           @db.VarChar(255)
+  user_id         Int
+  deleted         Boolean           @default(false)
+  thumbnail_url   String?           @db.VarChar(255)
+  createdAt       DateTime?         @default(now()) @db.DateTime(0)
+  url             String            @db.VarChar(255)
+  width           Int?
+  height          Int?
+  album           album[]
+  comment         comment[]
+  users           users             @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_ibfk_1")
+  images_category images_category[]
+  images_like     images_like[]
+  images_save     images_save[]
+
+  @@index([user_id], map: "user_id")
+}
+
+model images_like {
+  user_id   Int
+  image_id  Int
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_like_ibfk_1")
+  images    images    @relation(fields: [image_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_like_ibfk_2")
+
+  @@id([user_id, image_id])
+  @@index([image_id], map: "image_id")
+}
+
+model images_save {
+  user_id   Int
+  image_id  Int
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  users     users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_save_ibfk_1")
+  images    images    @relation(fields: [image_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_save_ibfk_2")
+
+  @@id([user_id, image_id])
+  @@index([image_id], map: "image_id")
+}
+
+model users {
+  id                                      Int           @id @default(autoincrement())
+  email                                   String        @db.VarChar(100)
+  password                                String        @db.VarChar(255)
+  fullname                                String        @db.VarChar(255)
+  avatar                                  String?       @db.VarChar(255)
+  age                                     Int?
+  deleted                                 Boolean?      @default(false)
+  refresh_token                           String?       @db.LongText
+  album                                   album[]
+  comment                                 comment[]
+  following_following_user_idTousers      following[]   @relation("following_user_idTousers")
+  following_following_following_idTousers following[]   @relation("following_following_idTousers")
+  images                                  images[]
+  images_like                             images_like[]
+  images_save                             images_save[]
+}
+
+model categories {
+  id              Int               @id @default(autoincrement())
+  name            String?           @db.VarChar(70)
+  desciprtion     String?           @db.VarChar(255)
+  images_category images_category[]
+}
+
+model images_category {
+  image_id   Int
+  cate_id    Int
+  images     images     @relation(fields: [image_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_category_ibfk_1")
+  categories categories @relation(fields: [cate_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "images_category_ibfk_2")
+
+  @@id([image_id, cate_id])
+  @@index([cate_id], map: "cate_id")
+}
