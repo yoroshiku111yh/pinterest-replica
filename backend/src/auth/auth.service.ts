@@ -1,5 +1,5 @@
 import { UserService } from './../user/user.service';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { registerDto } from './dto/register.dto';
@@ -130,6 +130,6 @@ export class AuthService {
             }
             throw new HttpException("Token not right", HttpStatus.NOT_ACCEPTABLE);
         }
-        throw new HttpException("Unauthorization", HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException();
     }
 }

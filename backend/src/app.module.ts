@@ -16,18 +16,21 @@ import { NotificationGateway } from './notification/notification.gateway';
 import { CategoryModule } from './category/category.module';
 import { ImageCategoryModule } from './image-category/image-category.module';
 import { SearchModule } from './search/search.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: '.env.development',
-    isGlobal: true
-  }),
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env.development',
+      isGlobal: true
+    }),
     AuthModule,
     UserModule,
     ImageModule,
-  ServeStaticModule.forRoot({
-    rootPath: join(__dirname, "..", "public")
-  }),
+    JwtModule.register({}),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "public")
+    }),
     ImageLikeModule,
     ImageSaveModule,
     UserFollowingModule,

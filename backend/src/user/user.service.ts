@@ -1,4 +1,4 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { TokenPayload } from 'src/auth/dto/tokenPayload.dto';
@@ -22,7 +22,7 @@ export class UserService {
     if (user) {
       const tokenRefreshDecode: TokenPayload = this.jwtService.decode(user.refresh_token);
       if (tokenRefreshDecode.keyPair !== payload.keyPair) {
-        throw new HttpException('Token is not valid', HttpStatus.UNAUTHORIZED);
+        throw new UnauthorizedException();
       }
       const updatedUser = await this.prisma.users.update({
         where: {

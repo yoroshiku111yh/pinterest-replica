@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Get, Query, Headers, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Get, Query, Headers, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { registerDto } from './dto/register.dto';
 import { loginDto } from './dto/login.dto';
@@ -23,6 +23,9 @@ export class AuthController {
   @Post("/refresh-token")
   refreshToken(@Req() req : Request) {
     const authHeader = req.headers.authorization;
+    if(!authHeader){
+      throw new UnauthorizedException();
+    }
     return this.authService.refreshToken(authHeader.replace("Bearer ", ""));
   }
 }
