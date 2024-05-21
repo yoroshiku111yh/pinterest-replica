@@ -18,17 +18,23 @@ import { ImageCategoryModule } from './image-category/image-category.module';
 import { SearchModule } from './search/search.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, UserModule, ImageModule,
+  imports: [ConfigModule.forRoot({
+    envFilePath: '.env.development',
+    isGlobal: true
+  }),
+    AuthModule,
+    UserModule,
+    ImageModule,
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, "..", "public")
   }),
-  ImageLikeModule,
-  ImageSaveModule,
-  UserFollowingModule,
-  CommentModule,
-  CategoryModule,
-  ImageCategoryModule,
-  SearchModule,
+    ImageLikeModule,
+    ImageSaveModule,
+    UserFollowingModule,
+    CommentModule,
+    CategoryModule,
+    ImageCategoryModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, NotificationGateway],
