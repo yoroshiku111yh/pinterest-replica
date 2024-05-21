@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  @apply font-sans;
+  color: rgb(var(--foreground-rgb));
+}
+main {
+  @apply pt-24 px-10 pb-9 bg-neutral-100 min-h-svh;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .btn-border-style {
+    @apply min-w-16 whitespace-nowrap px-4 py-3 text-base text-center font-semibold rounded-3xl;
+  }
+  .icon-circle-style {
+    @apply rounded-full w-10 aspect-square p-2 bg-white shadow-md cursor-pointer flex items-center justify-center;
+  }
+  .input-block {
+    @apply text-base px-4 py-2 relative bg-[#f1f1f1] rounded-3xl h-12;
+    input {
+      @apply bg-transparent h-full w-full outline-none;
+    }
+    textarea {
+      @apply bg-transparent h-full w-full outline-none resize-none ;
+    }
+  }
+}
