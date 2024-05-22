@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Req, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -69,7 +69,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor("avatar", {
     storage: memoryStorage()
   }))
-  @Post("/edit")
+  @Put("/edit")
   update(@UploadedFile(CompressImagePipe) avatar: FileCompressed[] | undefined, @Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
     const { user } = req;
     const pathAvatar = !avatar ? null : avatar[0]

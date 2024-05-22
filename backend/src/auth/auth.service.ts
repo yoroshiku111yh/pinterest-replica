@@ -25,17 +25,27 @@ export class AuthService {
             const saltOrRounds = 10;
             const hash = await bcrypt.hash(form.password, saltOrRounds);
             try {
-                await this.prisma.users.create({
+                const user = await this.prisma.users.create({
                     data: {
                         fullname: form.fullname,
                         email: form.email,
                         password: hash,
-                        age : form.age
+                        age: Number(form.age)
                     }
                 });
+                const payload: TokenPayload = {
+                    id: user.id,
+                    email: user.email,
+                    fullname: user.fullname,
+                    keyPair: "",
+                    avatar: ""
+                };
+                const accessToken = await this.createPairAccessAndRefreshToken(payload, user.id);
                 return {
                     statusCode: HttpStatus.CREATED,
-                    message: "User created successfully"
+                    message: "User created successfully",
+                    data : accessToken
+
                 }
             }
             catch (error) {
@@ -82,9 +92,12 @@ export class AuthService {
                     data: accessToken
                 };
             }
+            else{
+                throw new HttpException("Email or password is incorrect", HttpStatus.NOT_FOUND);
+            }
         }
         else {
-            throw new HttpException("Email not registered", HttpStatus.NOT_FOUND);
+            throw new HttpException("Email or password is incorrect", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -111,25 +124,46 @@ export class AuthService {
         });
         if (user) {
             const { refresh_token } = user;
-            const decodeRefresh: TokenDecodePayload = this.jwtService.decode(refresh_token);
-            if (payload.keyPair === decodeRefresh.keyPair) {
-                const _payload: TokenPayload = {
-                    id: user.id,
-                    email: user.email,
-                    fullname: user.fullname,
-                    keyPair: "",
-                    avatar: ""
-                };
-                ///////
-                const accessToken = await this.createPairAccessAndRefreshToken(_payload, user.id);
-                return {
-                    statusCode: HttpStatus.CREATED,
-                    message: "accessToken successfully",
-                    data: accessToken
-                };
+            try {
+                const decodeRefresh: TokenDecodePayload = await this.jwtService.verify(refresh_token, {
+                    secret: process.env.SECRECT_KEY_REFRESH,
+                });
+                if (payload.keyPair === decodeRefresh.keyPair) {
+                    const _payload: TokenPayload = {
+                        id: user.id,
+                        email: user.email,
+                        fullname: user.fullname,
+                        keyPair: "",
+                        avatar: ""
+                    };
+                    ///////
+                    const accessToken = await this.createPairAccessAndRefreshToken(_payload, user.id);
+                    return {
+                        statusCode: HttpStatus.CREATED,
+                        message: "accessToken successfully",
+                        data: accessToken
+                    };
+                }
+                throw new UnauthorizedException();
             }
-            throw new HttpException("Token not right", HttpStatus.NOT_ACCEPTABLE);
+            catch (err) {
+                throw new HttpException("Refresh token is expired", HttpStatus.UNAUTHORIZED);
+            }
         }
         throw new UnauthorizedException();
+    }
+    async logout(idUser : number){
+        await this.prisma.users.update({
+            where : {
+                id : idUser
+            },
+            data : {
+                refresh_token : null
+            }
+        });
+        return {
+            statusCode : HttpStatus.OK,
+            message : "Logout successfully"
+        }
     }
 }

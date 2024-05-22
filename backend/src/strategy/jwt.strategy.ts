@@ -29,10 +29,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, "myJwt") {
                 refresh_token: true
             }
         });
-        const decodeRefresh: TokenDecodePayload = this.jwtService.decode(user.refresh_token);
-        if (payload.keyPair === decodeRefresh.keyPair) {
-            return payload;
+        try {
+            const decodeRefresh: TokenDecodePayload = await this.jwtService.verify(user.refresh_token, {
+                secret: process.env.SECRECT_KEY_REFRESH,
+            });
+            if (payload.keyPair === decodeRefresh.keyPair) {
+                return payload;
+            }
+            throw new UnauthorizedException();
         }
-        throw new UnauthorizedException();
+        catch (error) {
+            throw new HttpException("Refresh token is expired", HttpStatus.UNAUTHORIZED);
+        }
     }
 }

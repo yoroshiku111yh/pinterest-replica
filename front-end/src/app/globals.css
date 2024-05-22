@@ -18,7 +18,7 @@
 
 body {
   @apply font-sans;
-  color: rgb(var(--foreground-rgb));
+  color: black;
 }
 main {
   @apply pt-24 px-10 pb-9 bg-neutral-100 min-h-svh;
@@ -45,5 +45,11 @@ main {
     textarea {
       @apply bg-transparent h-full w-full outline-none resize-none ;
     }
+  }
+  .error-note{
+    @apply text-sm text-red-500
+  }
+  .fit-cover{
+    @apply w-full h-full object-cover
   }
 }

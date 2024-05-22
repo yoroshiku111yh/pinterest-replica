@@ -3,19 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import SearchInput from "./SearchInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoginPopup from "../popup/Login";
 import RegisterPopup from "../popup/Register";
+import { TokenPayload } from "@/app/utility/type";
+import { ENV } from "@/app/utility/global-variable";
+import useTokenDecode from "@/app/utility/hooks/useTokenDecode";
+import { localStorageFn } from "@/app/utility/axios";
 
 export default function Header() {
   const [popupRegister, setPopupRegister] = useState(false);
   const [popupLogin, setPopupLogin] = useState(false);
+  const { decode, setToken, token } = useTokenDecode();
   const clickClosePopup = () => {
     document.body.style.overflow = "";
     setPopupRegister(false);
     setPopupLogin(false);
   };
-
   const clickOpenPopupRegister = () => {
     document.body.style.overflow = "hidden";
     setPopupRegister(true);
@@ -65,26 +69,43 @@ export default function Header() {
             <SearchInput />
           </div>
         </div>
-        <Link
-          href="/user/ddsadsa"
-          className="w-12 block aspect-square rounded-full overflow-hidden bg-zinc-700"
-        >
-          {/* <Image src="/avatar" alt="avatar" width={48} height={48} /> */}
-        </Link>
-        <div
-          className="btn-border-style bg-red-700 text-white cursor-pointer"
-          onClick={clickOpenPopupLogin}
-        >
-          Đăng nhập
-        </div>
-        <div
-          className="btn-border-style bg-blue-700 text-white cursor-pointer"
-          onClick={clickOpenPopupRegister}
-        >
-          Đăng ký
-        </div>
-        <LoginPopup popup={popupLogin} closePopup={clickClosePopup} />
-        <RegisterPopup popup={popupRegister} closePopup={clickClosePopup} />
+        {decode && (
+          <>
+            <Link
+              href={`/user/${decode.id}`}
+              className="w-12 block aspect-square rounded-full overflow-hidden bg-zinc-700"
+            >
+              {decode.avatar && (
+                <Image 
+                  className="fit-cover"
+                  src={`${ENV.BASE_URL}/${decode.avatar}`}
+                  alt="avatar"
+                  width={100}
+                  height={100}
+                />
+              )}
+            </Link>
+          </>
+        )}
+        {!token && (
+          <>
+            <div
+              className="btn-border-style bg-red-700 text-white cursor-pointer"
+              onClick={clickOpenPopupLogin}
+            >
+              Đăng nhập
+            </div>
+            <LoginPopup popup={popupLogin} closePopup={clickClosePopup} />
+
+            <div
+              className="btn-border-style bg-blue-700 text-white cursor-pointer"
+              onClick={clickOpenPopupRegister}
+            >
+              Đăng ký
+            </div>
+            <RegisterPopup popup={popupRegister} closePopup={clickClosePopup} />
+          </>
+        )}
       </nav>
     </header>
   );

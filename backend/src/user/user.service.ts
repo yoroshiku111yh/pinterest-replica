@@ -6,6 +6,14 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { FileCompressed } from 'src/image/dto/create-image.dto';
 
+
+const selectField = {
+  id: true,
+  email: true,
+  fullname: true,
+  avatar: true,
+  age: true
+}
 @Injectable()
 export class UserService {
   constructor(private readonly authService: AuthService,
@@ -30,8 +38,8 @@ export class UserService {
         },
         data: {
           fullname: updateData.fullname,
-          avatar: avatar ? avatar.original.path : null,
-          age: Number(updateData.age)
+          avatar: avatar ? avatar.original.path : user.avatar,
+          age: Number(updateData.age) ? Number(updateData.age) : user.age
         }
       });
       const _payload: TokenPayload = {
@@ -56,28 +64,18 @@ export class UserService {
       where: {
         id: id
       },
-      select: {
-        id: true,
-        email: true,
-        fullname: true,
-        avatar: true,
-      }
+      select: selectField
     });
     if (!user) {
       throw new HttpException("Not found", HttpStatus.NOT_FOUND);
     }
     const follower = await this.prisma.following.findMany({
       where: {
-        following_id : id
+        following_id: id
       },
       include: {
         users_following_user_idTousers: {
-          select: {
-            id: true,
-            fullname: true,
-            avatar: true,
-            email : true
-          }
+          select: selectField
         }
       }
     });
@@ -87,12 +85,7 @@ export class UserService {
       },
       include: {
         users_following_following_idTousers: {
-          select: {
-            id: true,
-            fullname: true,
-            avatar: true,
-            email : true
-          }
+          select: selectField
         }
       }
     });
@@ -117,28 +110,18 @@ export class UserService {
       where: {
         id: id
       },
-      select: {
-        id: true,
-        fullname: true,
-        avatar: true,
-        email: true,
-      }
+      select: selectField
     });
     if (!user) {
       throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
     const follower = await this.prisma.following.findMany({
       where: {
-        following_id : id
+        following_id: id
       },
       include: {
         users_following_user_idTousers: {
-          select: {
-            id: true,
-            fullname: true,
-            avatar: true,
-            email : true
-          }
+          select: selectField
         }
       }
     });
@@ -148,12 +131,7 @@ export class UserService {
       },
       include: {
         users_following_following_idTousers: {
-          select: {
-            id: true,
-            fullname: true,
-            avatar: true,
-            email : true
-          }
+          select: selectField
         }
       }
     });

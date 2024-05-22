@@ -5,6 +5,7 @@ import { loginDto } from './dto/login.dto';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { TokenPayload } from './dto/tokenPayload.dto';
 
 @ApiTags("Auth")
 @Controller('auth')
@@ -19,11 +20,21 @@ export class AuthController {
   login(@Body() data: loginDto) {
     return this.authService.login(data)
   }
+
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAuthGuard)
+  @Post("/logout")
+  logout(@Req() req: Request) {
+    const payload = req.user as TokenPayload;
+    console.log(payload)
+    return this.authService.logout(payload.id);
+  }
+
   @ApiBearerAuth("access-token")
   @Post("/refresh-token")
-  refreshToken(@Req() req : Request) {
+  refreshToken(@Req() req: Request) {
     const authHeader = req.headers.authorization;
-    if(!authHeader){
+    if (!authHeader) {
       throw new UnauthorizedException();
     }
     return this.authService.refreshToken(authHeader.replace("Bearer ", ""));
