@@ -58,53 +58,6 @@ export class UserService {
     }
     throw new HttpException("Not found", HttpStatus.NOT_FOUND);
   }
-
-  async getYourself(id: number) {
-    const user = await this.prisma.users.findUnique({
-      where: {
-        id: id
-      },
-      select: selectField
-    });
-    if (!user) {
-      throw new HttpException("Not found", HttpStatus.NOT_FOUND);
-    }
-    const follower = await this.prisma.following.findMany({
-      where: {
-        following_id: id
-      },
-      include: {
-        users_following_user_idTousers: {
-          select: selectField
-        }
-      }
-    });
-    const following = await this.prisma.following.findMany({
-      where: {
-        user_id: id
-      },
-      include: {
-        users_following_following_idTousers: {
-          select: selectField
-        }
-      }
-    });
-    return {
-      statusCode: HttpStatus.OK,
-      message: "Get your self successfully",
-      data: {
-        info: user,
-        follower: {
-          list: follower,
-          total: follower.length
-        },
-        following: {
-          list: following,
-          total: following.length
-        }
-      }
-    }
-  }
   async getUser(id: number) {
     const user = await this.prisma.users.findUnique({
       where: {
@@ -115,24 +68,19 @@ export class UserService {
     if (!user) {
       throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     }
-    const follower = await this.prisma.following.findMany({
+    const follower = await this.prisma.following.count({
       where: {
         following_id: id
       },
-      include: {
-        users_following_user_idTousers: {
-          select: selectField
-        }
-      }
+      // include: {
+      //   users_following_user_idTousers: {
+      //     select: selectField
+      //   }
+      // }
     });
-    const following = await this.prisma.following.findMany({
+    const following = await this.prisma.following.count({
       where: {
         user_id: id
-      },
-      include: {
-        users_following_following_idTousers: {
-          select: selectField
-        }
       }
     });
     return {
@@ -141,12 +89,10 @@ export class UserService {
       data: {
         info: user,
         follower: {
-          list: follower,
-          total: follower.length
+          total: follower
         },
         following: {
-          list: following,
-          total: following.length
+          total: following
         }
       }
     }

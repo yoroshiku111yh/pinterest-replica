@@ -1,7 +1,10 @@
-import GridLayoutPicture from "./components/GridLayoutPicture";
+"use client";
+
+import { ResponseDataPicture, getListPicture } from "./utility/axios/api";
+import MasonryLayout from "./components/MasonryLayout";
+import useScrollToLoadMore from "./utility/hooks/useScrollToLoadMore";
 
 export default function Home() {
-  return (
-    <GridLayoutPicture />
-  );
+  const { listData } = useScrollToLoadMore<ResponseDataPicture>(getListPicture);
+  return <MasonryLayout listPicture={listData} />;
 }

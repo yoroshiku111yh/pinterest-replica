@@ -1,4 +1,3 @@
-import GridLayoutPicture from "@/app/components/GridLayoutPicture";
 import { ENV } from "@/app/utility/global-variable";
 import { ResponseUserType } from "@/app/utility/type";
 import Link from "next/link";
@@ -43,7 +42,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
         <span>Đã lưu</span>
       </div>
       <div className="pt-10">
-        <GridLayoutPicture />
+        {/* <GridLayoutPicture /> */}
       </div>
     </div>
   );

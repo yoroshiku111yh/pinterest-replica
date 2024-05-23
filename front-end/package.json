@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
+    "@types/lodash": "^4.17.4",
     "axios": "^1.7.1",
     "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
     "next": "14.2.3",
     "preline": "^2.1.0",
     "react": "^18",

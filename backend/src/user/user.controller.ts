@@ -30,7 +30,7 @@ export class UserController {
     name: "id",
     example: 6
   })
-  @Get("/:id")
+  @Get("/:id(\\d+)")
   getUser(@Param("id", ParseIntPipe) id: number) {
     return this.userService.getUser(id);
   }
@@ -40,7 +40,7 @@ export class UserController {
   @Get('')
   getYourself(@Req() req: Request) {
     const payload = req.user as TokenPayload
-    return this.userService.getYourself(payload.id);
+    return this.userService.getUser(payload.id);
   }
 
   @ApiBearerAuth("access-token")
@@ -82,7 +82,38 @@ export class UserController {
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Post("/follow/:id")
+  @Get("/follow/:id(\\d+)")
+  checkIsFollowed(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const payload = req.user as TokenPayload;
+    return this.userFollowingService.checkIsFollowed(payload.id, id);
+  }
+
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAuthGuard)
+  @Get("/follower")
+  getFollower(@Req() req: Request) {
+    const payload = req.user as TokenPayload;
+    return this.userFollowingService.getFollower(payload.id);
+  }
+
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAuthGuard)
+  @Get("/following")
+  getFollowing(@Req() req: Request) {
+    const payload = req.user as TokenPayload;
+    return this.userFollowingService.getFollowing(payload.id);
+  }
+
+
+  ////////LAST IN LINE
+
+  @ApiParam({
+    name: "id",
+    example: 6
+  })
+  @ApiBearerAuth("access-token")
+  @UseGuards(JwtAuthGuard)
+  @Post("/follow/:id(\\d+)")
   follow(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const payload = req.user as TokenPayload;
     return this.userFollowingService.toggleFollow(payload.id, id);
@@ -92,7 +123,7 @@ export class UserController {
     name: "id",
     example: 6
   })
-  @Get(":id/image/like")
+  @Get(":id(\\d+)/image/like")
   getLikeImages(@Param("id", ParseIntPipe) id: number) {
     return this.imageLikeService.getLikedImages(id);
   }
@@ -101,7 +132,7 @@ export class UserController {
     name: "id",
     example: 6
   })
-  @Get(":id/image/save")
+  @Get(":id(\\d+)/image/save")
   getSaveImages(@Param("id", ParseIntPipe) id: number) {
     return this.imageSaveService.getSavedImages(id);
   }

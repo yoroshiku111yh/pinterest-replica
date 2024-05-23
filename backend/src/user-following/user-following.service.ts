@@ -1,6 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+
+const selectField = {
+    id: true,
+    email: true,
+    fullname: true,
+    avatar: true,
+    age: true
+}
 @Injectable()
 export class UserFollowingService {
     prisma = new PrismaClient();
@@ -18,8 +26,8 @@ export class UserFollowingService {
         }
         const isFollowed = await this.prisma.following.findFirst({
             where: {
-                following_id: idUser,
-                user_id: idFollower
+                user_id: idUser,
+                following_id: idFollower
             }
         });
         if (isFollowed) {
@@ -33,7 +41,8 @@ export class UserFollowingService {
             });
             return {
                 statusCode: HttpStatus.OK,
-                message: "Unfollowed"
+                message: "Unfollowed",
+                data : false,
             }
         }
         await this.prisma.following.create({
@@ -44,8 +53,64 @@ export class UserFollowingService {
         });
         return {
             statusCode: HttpStatus.OK,
-            message: "followed"
+            message: "followed",
+            data : true
         }
 
+    }
+    async checkIsFollowed(idUser: number, idFollowing: number) {
+        const isFollowed = await this.prisma.following.findFirst({
+            where: {
+                user_id: idUser,
+                following_id: idFollowing
+            }
+        });
+        return {
+            statusCode: HttpStatus.OK,
+            message: "is followed",
+            data: isFollowed ? true : false
+        }
+    }
+
+    async getFollower(idUser: number) {
+        const follower = await this.prisma.following.findMany({
+            where: {
+                following_id: idUser
+            },
+            include: {
+                users_following_user_idTousers: {
+                    select: selectField
+                }
+            }
+        });
+        return {
+            statusCode : HttpStatus.OK,
+            message: "get follower",
+            data : {
+                total : follower.length,
+                list : follower
+            }
+        }
+    }
+
+    async getFollowing(idUser: number) {
+        const following = await this.prisma.following.findMany({
+            where: {
+                user_id: idUser
+            },
+            include: {
+                users_following_following_idTousers: {
+                    select: selectField
+                }
+            }
+        });
+        return {
+            statusCode : HttpStatus.OK,
+            message: "get following",
+            data : {
+                total : following.length,
+                list : following
+            }
+        }
     }
 }

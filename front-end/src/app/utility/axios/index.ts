@@ -16,6 +16,10 @@ export const instanceAxios = axios.create({
     }
 });
 
+export interface TypeResponse {
+    statusCode : number,
+    message?: string,
+}
 
 instanceAxios.interceptors.request.use(
     (config) => {

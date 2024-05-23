@@ -18,10 +18,10 @@ const resolver: Resolver<InfoUserType> = async (values) => {
   if (values.fullname.length < 3) {
     errors.fullname = "Fullname must be at least 3 character long";
   }
-  if (values.age < 10 || isNaN(values.age)) {
+  if ((values.age < 10 && values.age > 200) || isNaN(values.age)) {
     errors.age = "Age is not valid";
   }
-  if(avatar[0].size > 5000*1000){ 
+  if(avatar[0] && avatar[0].size > 5000*1000){ 
     errors.age = "Limit file below 5mb";
   }
   return {

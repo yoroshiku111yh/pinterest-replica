@@ -22,7 +22,7 @@ export class ImageService {
             id: true,
             fullname: true,
             avatar: true,
-            email: true
+            email: true,
           }
         }
       }
@@ -30,17 +30,25 @@ export class ImageService {
     if (!image) {
       throw new HttpException("Image not found", HttpStatus.NOT_FOUND);
     }
+    const user_followers = await this.prisma.following.count({
+      where : {
+        following_id : image.users.id 
+      }
+    })
     const likes = await this.prisma.images_like.count({
       where: {
         image_id: id
       }
-    })
+    });
     return {
       statusCode: HttpStatus.OK,
       message: "Image found",
       data: {
-        likes: likes,
-        data: image,
+        data: {
+          ...image,
+          ...{likes: likes},
+          ...{followers : user_followers}
+        }
       }
     }
   }

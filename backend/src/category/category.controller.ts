@@ -10,7 +10,7 @@ export class CategoryController {
   getCategories(){
     return this.categoryService.getAll();
   }
-  @Get("/:id/image")
+  @Get("/:id(\\d+)/image")
   getImage(@Param("id", ParseIntPipe) id: number, @Query("page") page : number) {
     return this.categoryService.getImagesByCate(id, page || 1);
   }

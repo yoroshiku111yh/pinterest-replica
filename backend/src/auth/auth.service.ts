@@ -38,7 +38,7 @@ export class AuthService {
                     email: user.email,
                     fullname: user.fullname,
                     keyPair: "",
-                    avatar: ""
+                    avatar: user.avatar || ""
                 };
                 const accessToken = await this.createPairAccessAndRefreshToken(payload, user.id);
                 return {
@@ -83,7 +83,7 @@ export class AuthService {
                     email: user.email,
                     fullname: user.fullname,
                     keyPair: "",
-                    avatar: ""
+                    avatar: user.avatar || ""
                 };
                 const accessToken = await this.createPairAccessAndRefreshToken(payload, user.id);
                 return {
@@ -134,7 +134,7 @@ export class AuthService {
                         email: user.email,
                         fullname: user.fullname,
                         keyPair: "",
-                        avatar: ""
+                        avatar: user.avatar || ""
                     };
                     ///////
                     const accessToken = await this.createPairAccessAndRefreshToken(_payload, user.id);

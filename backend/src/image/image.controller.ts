@@ -30,7 +30,7 @@ export class ImageController {
     return this.imageService.findAll(page || 1);
   }
 
-  @Get("/:id")
+  @Get("/:id(\\d+)")
   findById(@Param("id", ParseIntPipe) id: number) {
     return this.imageService.findById(id);
   }
@@ -126,7 +126,7 @@ export class ImageController {
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard, new GuardPermission(TABLE_NAME.IMAGE))
-  @Post("/edit/:id")
+  @Post("/edit/:id(\\d+)")
   edit(@Body() formUpdate: UpdateImageDto,
     @Param("id", ParseIntPipe) id: number) {
     return this.imageService.editInfoImage(formUpdate, id);
@@ -134,14 +134,14 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard, new GuardPermission(TABLE_NAME.IMAGE))
-  @Delete("/delete/:id")
+  @Delete("/delete/:id(\\d+)")
   delete(@Param("id", ParseIntPipe) id: number) {
     return this.imageService.deleteImage(id);
   }
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Post("/:id/like")
+  @Post("/:id(\\d+)/like")
   likeImage(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const payload = req.user as TokenPayload;
     return this.imageLikeService.toggleLike(payload.id, id);
@@ -149,7 +149,7 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Post("/:id/save")
+  @Post("/:id(\\d+)/save")
   saveImage(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const payload = req.user as TokenPayload;
     return this.imageSaveService.toggleSave(payload.id, id);
@@ -157,7 +157,7 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Get("/:id/like")
+  @Get("/:id(\\d+)/like")
   checkIsLiked(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
     const payload = req.user as TokenPayload;
     const idUser = payload.id
@@ -166,14 +166,14 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Get("/:id/save")
+  @Get("/:id(\\d+)/save")
   checkIsSaved(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
     const payload = req.user as TokenPayload;
     const idUser = payload.id
     return this.imageSaveService.isSaved(id, idUser);
   }
 
-  @Get("/:id/comment")
+  @Get("/:id(\\d+)/comment")
   getComments(@Param("id", ParseIntPipe) id: number, @Query("page", ParseIntPipe) page: number) {
     return this.commentService.getComment(id, page || 1)
   }
@@ -191,7 +191,7 @@ export class ImageController {
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Post("/:id/comment")
+  @Post("/:id(\\d+)/comment")
   postComment(@Body() formComment: { content: string }, @Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const payload = req.user as TokenPayload;
     return this.commentService.postComment({

@@ -13,12 +13,16 @@ export class SearchController {
       this.searchService.findCateByName(searchKeyword)
     ])
     return {
-      statusCode : HttpStatus.OK,
-      message : "search result",
-      data : {
-        images : imageResult.data,
-        category : cateResult.data
+      statusCode: HttpStatus.OK,
+      message: "search result",
+      data: {
+        images: imageResult.data,
+        category: cateResult.data
       }
     }
+  }
+  @Get("/categories")
+  async findCate(@Query("search") searchKeyword: string) {
+    return this.searchService.findCateByName(searchKeyword);
   }
 }
