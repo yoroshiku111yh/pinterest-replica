@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { ENV } from "../global-variable";
-import { refreshToken } from "./api";
+import { refreshToken } from "./api.auth";
 
 export const headersToUpload = {
     'Content-Type': `multipart/form-data`

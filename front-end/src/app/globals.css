@@ -53,6 +53,6 @@ main {
     @apply w-full h-full object-cover;
   }
   .masonry-images {
-    @apply columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4;
+    @apply columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>div:not(:first-child)]:mt-8;
   }
 }

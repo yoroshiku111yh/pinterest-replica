@@ -27,7 +27,8 @@ export class ImageLikeService {
             });
             return {
                 statusCode: HttpStatus.OK,
-                message: "unliked"
+                message: "unliked",
+                data : false
             }
         }
         else {
@@ -39,7 +40,8 @@ export class ImageLikeService {
             });
             return {
                 statusCode: HttpStatus.OK,
-                message: "liked"
+                message: "liked",
+                data : true
             }
         }
     }
@@ -67,6 +69,17 @@ export class ImageLikeService {
         return {
             statusCode : HttpStatus.OK,
             data: likedImages
+        }
+    }
+    async getTotalLikesOfImage(idImage: number){
+        const totalLikes = await this.prisma.images_like.count({
+            where : {
+                image_id : idImage
+            }
+        });
+        return {
+            statusCode : HttpStatus.OK,
+            data : totalLikes
         }
     }
 }

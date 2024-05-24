@@ -1,9 +1,9 @@
 import { CompressImagePipe } from './../pipes/compress-image/compress-image.pipe';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile, Headers } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { FileCompressed } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { Request } from 'express';
@@ -25,9 +25,15 @@ export class ImageController {
     private readonly commentService: CommentService
   ) { }
 
+  @ApiQuery({ name: 'page', required: true, type: Number, description: 'Page number' })
+  @ApiHeader({ name: 'authorization', required: false, description: 'Bearer token for authorization', example : "Bearer..." })
   @Get()
-  findAll(@Query("page", ParseIntPipe) page: number) {
-    return this.imageService.findAll(page || 1);
+  findAll(@Query("page", ParseIntPipe) page: number,@Headers('authorization') authHeader: string) {
+    let token = "";
+    if(authHeader){
+      token = authHeader.replace("Bearer ", "");
+    }
+    return this.imageService.findAll(page || 1, token);
   }
 
   @Get("/:id(\\d+)")
@@ -157,20 +163,31 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard)
-  @Get("/:id(\\d+)/like")
-  checkIsLiked(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
+  @Get("/:id(\\d+)/interact")
+  async getInteract(@Req() req: Request, @Param("id", ParseIntPipe) id: number){
     const payload = req.user as TokenPayload;
-    const idUser = payload.id
-    return this.imageLikeService.isLiked(id, idUser);
+    const idUser = payload.id;
+    const [isSaved, isLiked] = await Promise.all([
+      this.imageSaveService.isSaved(id, idUser),
+      this.imageLikeService.isLiked(id, idUser),
+    ]);
+    return {
+      statusCode : HttpStatus.OK,
+      data : {
+        isSaved : isSaved.data,
+        isLiked : isLiked.data
+      }
+    }
   }
 
-  @ApiBearerAuth("access-token")
-  @UseGuards(JwtAuthGuard)
-  @Get("/:id(\\d+)/save")
-  checkIsSaved(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-    const payload = req.user as TokenPayload;
-    const idUser = payload.id
-    return this.imageSaveService.isSaved(id, idUser);
+  @Get("/:id(\\d+)/total/like")
+  getTotalLike(@Param("id", ParseIntPipe) id: number) {
+    return this.imageLikeService.getTotalLikesOfImage(id);
+  }
+
+  @Get("/:id(\\d+)/total/save")
+  getTotalSave(@Param("id", ParseIntPipe) id: number) {
+    return this.imageSaveService.getTotalSaveOfImage(id);
   }
 
   @Get("/:id(\\d+)/comment")

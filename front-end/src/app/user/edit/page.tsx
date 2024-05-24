@@ -1,7 +1,7 @@
 "use client";
 
 import { localStorageFn } from "@/app/utility/axios";
-import { RegisterDataType, UpdateInfoUserType, getProfile, updateInfoUser } from "@/app/utility/axios/api";
+import { UpdateInfoUserType, getProfile, updateInfoUser } from "@/app/utility/axios/api.user";
 import { ENV } from "@/app/utility/global-variable";
 import { ResponseUserType } from "@/app/utility/type";
 import Image from "next/image";
@@ -42,7 +42,7 @@ export default function Page() {
     try {
       const res = await getProfile();
       setInfo(res.data);
-      const addPath = `${ENV.BASE_URL}/${res.data.info.avatar}`
+      const addPath = res.data.info.avatar && `${ENV.BASE_URL}/${res.data.info.avatar}`
       setAvatarPreview(addPath);
     } catch (err) {
       console.log(err);
@@ -59,6 +59,7 @@ export default function Page() {
         avatar : data.avatar[0] || null
       });
       localStorageFn.token = response.data;
+      console.log("success")
     }
     catch(error){
       console.error("Error when update info user :" + error);

@@ -88,20 +88,14 @@ export class UserController {
     return this.userFollowingService.checkIsFollowed(payload.id, id);
   }
 
-  @ApiBearerAuth("access-token")
-  @UseGuards(JwtAuthGuard)
-  @Get("/follower")
-  getFollower(@Req() req: Request) {
-    const payload = req.user as TokenPayload;
-    return this.userFollowingService.getFollower(payload.id);
+  @Get("/:id(\\d+)/follower")
+  getFollower(@Param("id", ParseIntPipe) id: number) {
+    return this.userFollowingService.getFollower(id);
   }
 
-  @ApiBearerAuth("access-token")
-  @UseGuards(JwtAuthGuard)
-  @Get("/following")
-  getFollowing(@Req() req: Request) {
-    const payload = req.user as TokenPayload;
-    return this.userFollowingService.getFollowing(payload.id);
+  @Get("/:id(\\d+)/following")
+  getFollowing(@Param("id", ParseIntPipe) id: number) {
+    return this.userFollowingService.getFollowing(id);
   }
 
 

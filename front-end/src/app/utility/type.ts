@@ -12,11 +12,9 @@ export type UserType = Omit<TokenPayload, "keyPair"> & {
 export interface ResponseUserType {
     info: UserType,
     follower: {
-        list: UserType[],
         total: number
     },
     following: {
-        list: UserType[],
         total: number
     },
 }

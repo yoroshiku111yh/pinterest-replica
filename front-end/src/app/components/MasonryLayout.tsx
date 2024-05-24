@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ENV } from "../utility/global-variable";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Link from "next/link";
-import { ResponseDataPicture } from "../utility/axios/api";
+import { ResponseDataPicture } from "../utility/axios/api.image";
 import useTokenDecode from "../utility/hooks/useTokenDecode";
 
 interface TypeProps {
@@ -31,7 +31,7 @@ export default function MasonryLayout(props: TypeProps) {
             {isLoggedIn && (
               <>
                 <div className="btn-border-style bg-red-700 text-white cursor-pointer shadow-md z-20 relative">
-                  Lưu
+                  {item.isSaved ? "SAVED" : "SAVE"}
                 </div>
                 <div className=" flex flex-row gap-3 relative z-20">
                   <div className="icon-circle-style">

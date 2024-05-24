@@ -1,7 +1,7 @@
 "use client";
 
 import { localStorageFn } from "@/app/utility/axios";
-import { LoginDataType, loginApi } from "@/app/utility/axios/api";
+import { LoginDataType, loginApi } from "@/app/utility/axios/api.auth";
 import { useRef, useState } from "react";
 import { Resolver, useForm } from "react-hook-form";
 import { useOnClickOutside } from "usehooks-ts";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponseDataPicture, getListPicture } from "./utility/axios/api";
+import { ResponseDataPicture, getListPicture } from "./utility/axios/api.image";
 import MasonryLayout from "./components/MasonryLayout";
 import useScrollToLoadMore from "./utility/hooks/useScrollToLoadMore";
 

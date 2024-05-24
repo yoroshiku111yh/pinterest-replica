@@ -2,12 +2,13 @@
 
 import { useForm, Resolver } from "react-hook-form";
 import useTokenDecode from "../utility/hooks/useTokenDecode";
-import { UploadImageType, searchCate, uploadImage } from "../utility/axios/api";
+import { UploadImageType, uploadImage } from "../utility/axios/api.image";
 import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import useFetchAddCate, { CateType } from "../utility/hooks/useFetchAddCate";
 import Image from "next/image";
+import { searchCate } from "../utility/axios/api.search";
 
 export default function Page() {
   const { token, decode } = useTokenDecode();

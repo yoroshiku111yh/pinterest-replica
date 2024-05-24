@@ -27,7 +27,8 @@ export class ImageSaveService {
             });
             return {
                 statusCode: HttpStatus.OK,
-                message: "unsaved"
+                message: "unsaved",
+                data : false,
             }
         }
         else {
@@ -39,7 +40,8 @@ export class ImageSaveService {
             });
             return {
                 statusCode: HttpStatus.OK,
-                message: "saved"
+                message: "saved",
+                data : true,
             }
         }
     }
@@ -67,6 +69,17 @@ export class ImageSaveService {
         return {
             statusCode: HttpStatus.OK,
             data: savedImages
+        }
+    }
+    async getTotalSaveOfImage(idImage : number){
+        const totalSave = await this.prisma.images_save.count({
+            where : {
+                image_id : idImage
+            }
+        });
+        return {
+            statusCode : HttpStatus.OK,
+            data : totalSave
         }
     }
 }

@@ -1,8 +1,9 @@
+import { JwtService } from '@nestjs/jwt';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { FileCompressed } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { PrismaClient } from '@prisma/client';
-import { TokenPayload } from 'src/auth/dto/tokenPayload.dto';
+import { TokenDecodePayload, TokenPayload } from 'src/auth/dto/tokenPayload.dto';
 import { ImageCategoryService } from 'src/image-category/image-category.service';
 
 const pageSize = 10;
@@ -10,7 +11,8 @@ const pageSize = 10;
 @Injectable()
 export class ImageService {
   constructor(
-    private readonly imageCategoryService: ImageCategoryService
+    private readonly imageCategoryService: ImageCategoryService,
+    private readonly jwtService: JwtService
   ) { }
   prisma = new PrismaClient();
   async findById(id: number) {
@@ -30,29 +32,27 @@ export class ImageService {
     if (!image) {
       throw new HttpException("Image not found", HttpStatus.NOT_FOUND);
     }
-    const user_followers = await this.prisma.following.count({
-      where : {
-        following_id : image.users.id 
-      }
-    })
-    const likes = await this.prisma.images_like.count({
-      where: {
-        image_id: id
-      }
-    });
     return {
       statusCode: HttpStatus.OK,
       message: "Image found",
       data: {
         data: {
-          ...image,
-          ...{likes: likes},
-          ...{followers : user_followers}
+          ...image
         }
       }
     }
   }
-  async findAll(page = 1) {
+  async findAll(page = 1, token = "") {
+    let userId = 0;
+    try {
+      const decodeToken: TokenDecodePayload = await this.jwtService.verify(token, {
+        secret: process.env.SECRECT_KEY,
+      });
+      userId = decodeToken.id;
+    }
+    catch (err) {
+      console.log(err)
+    }
     try {
       const total = await this.prisma.images.count();
       const index = (page - 1) * pageSize;
@@ -64,7 +64,25 @@ export class ImageService {
         skip: index,
         orderBy: {
           createdAt: 'desc'
+        },
+        include: {
+          images_save: {
+            where: {
+              user_id: userId
+            },
+            select: {
+              user_id : true
+            }
+          }
         }
+      });
+      const imageList = list.map(image => {
+        const obj = {
+          ...image,
+          isSaved: image.images_save.length > 0
+        };
+        delete obj.images_save;
+        return obj;
       });
       return {
         statusCode: HttpStatus.FOUND,
@@ -72,7 +90,7 @@ export class ImageService {
         currentPage: page,
         pageSize: pageSize,
         totalPage: Math.ceil(total / pageSize),
-        data: list
+        data: imageList
       }
     }
     catch (error) {
@@ -112,7 +130,7 @@ export class ImageService {
       data: final
     }
   }
-  async uploadMulti(files: FileCompressed[], user: TokenPayload, cates : string) {
+  async uploadMulti(files: FileCompressed[], user: TokenPayload, cates: string) {
     const arCate = JSON.parse(cates);
     const uploaded = await Promise.all(
       files.map(async (file) => {
@@ -130,8 +148,8 @@ export class ImageService {
         });
         await this.imageCategoryService.addCateToImage(uploadedImg.id, arCate);
         const finalImage = this.prisma.images.findUnique({
-          where : {
-            id : uploadedImg.id
+          where: {
+            id: uploadedImg.id
           },
           include: {
             images_category: {
@@ -146,9 +164,9 @@ export class ImageService {
     )
     //await this.imageCategoryService.addCateToImage(uploaded.id, arCate);
     return {
-      statusCode : HttpStatus.OK,
-      message : "Uploaded images success",
-      data : uploaded
+      statusCode: HttpStatus.OK,
+      message: "Uploaded images success",
+      data: uploaded
     };
   }
   async editInfoImage(editData: UpdateImageDto, id: number) {
