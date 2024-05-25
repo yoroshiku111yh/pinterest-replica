@@ -110,7 +110,7 @@ model users {
 model categories {
   id              Int               @id @default(autoincrement())
   name            String?           @db.VarChar(70)
-  desciprtion     String?           @db.VarChar(255)
+  description     String?           @db.VarChar(255)
   images_category images_category[]
 }
 

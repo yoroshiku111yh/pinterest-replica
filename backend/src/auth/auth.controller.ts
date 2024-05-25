@@ -26,7 +26,6 @@ export class AuthController {
   @Post("/logout")
   logout(@Req() req: Request) {
     const payload = req.user as TokenPayload;
-    console.log(payload)
     return this.authService.logout(payload.id);
   }
 

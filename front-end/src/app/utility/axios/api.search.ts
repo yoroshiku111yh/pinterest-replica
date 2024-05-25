@@ -1,7 +1,8 @@
 import { instanceAxios } from ".";
+import { CatesTypeReponse } from "./api.cates";
 
 
-export const searchCate = async (keyword: string) => {
+export const searchCate = async (keyword: string):Promise<{data : CatesTypeReponse[]}> => {
     try {
         const response = await instanceAxios.get(`/search/categories/`, {
             params: {

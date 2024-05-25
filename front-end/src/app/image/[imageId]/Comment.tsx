@@ -1,37 +1,5 @@
 import Link from "next/link";
 
-
-export const Comment = () =>  {
-    return (
-      <div className="flex flex-row gap-3">
-        <div>
-          <Link
-            href="/"
-            className="w-10 block aspect-square rounded-full overflow-hidden bg-zinc-700"
-          >
-            {/* <Image src="/avatar" alt="avatar" width={48} height={48} /> */}
-          </Link>
-        </div>
-        <div>
-          <div className="flex flex-col gap-0 items-start">
-            <h6 className="text-base font-semibold">Username</h6>
-            <p className="text-xs text-zinc-500">21 phút trước</p>
-          </div>
-          <div className="pt-1 pr-3">
-            What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing
-            and typesetting industry. Lorem Ipsum has been the industry's standard
-            dummy text ever since the 1500s, when an unknown printer took a galley
-            of type and scrambled it to make a type specimen book. It has survived
-            not only five centuries, but also the leap into electronic
-            typesetting, remaining essentially unchanged. It was popularised in
-            the 1960s with the release of Letraset sheets containing Lorem Ipsum
-            passages.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   export const BlockInputComment = () => {
     return (
       <>

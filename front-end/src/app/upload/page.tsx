@@ -6,9 +6,10 @@ import { UploadImageType, uploadImage } from "../utility/axios/api.image";
 import { debounce } from "lodash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
-import useFetchAddCate, { CateType } from "../utility/hooks/useFetchAddCate";
+import useFetchAddCate from "../utility/hooks/useFetchAddCate";
 import Image from "next/image";
 import { searchCate } from "../utility/axios/api.search";
+import { CatesTypeReponse } from "../utility/axios/api.cates";
 
 export default function Page() {
   const { token, decode } = useTokenDecode();
@@ -58,7 +59,7 @@ const UploadImage = () => {
   } = useForm<FormUploadImageType>({ resolver });
   const onSubmit = handleSubmit(async (data) => {
     const arIdCates = selectedCates.reduce(
-      (result: number[], _cate: CateType) => {
+      (result: number[], _cate: CatesTypeReponse) => {
         result.push(_cate.id);
         return result;
       },
@@ -180,7 +181,7 @@ const UploadImage = () => {
                     className="flex-col gap-1 px-2 py-3 absolute z-20 mt-1 top-full left-0 w-full max-h-[100px] overflow-auto shadow-md rounded-md 
                   bg-[#f0eeee]"
                   >
-                    {fetchedCates.map((_cate: CateType, index: number) => {
+                    {fetchedCates.map((_cate: CatesTypeReponse, index: number) => {
                       return (
                         <div
                           className=" cursor-pointer text-base font-semibold pl-1"
@@ -196,7 +197,7 @@ const UploadImage = () => {
               </div>
               <div className="h-[180px] overflow-auto">
                 <div className="flex flex-row flex-wrap gap-2 pt-2 py-4">
-                  {selectedCates.map((_cate: CateType, index: number) => {
+                  {selectedCates.map((_cate: CatesTypeReponse, index: number) => {
                     return (
                       <span
                         key={index}

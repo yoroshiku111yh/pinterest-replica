@@ -1,15 +1,10 @@
 import { useState } from "react";
-import { AxiosResponse } from "axios";
+import { CatesTypeReponse } from "../axios/api.cates";
 
-export interface CateType {
-    name: string;
-    id: number;
-    description: string;
-}
 
-export default function useFetchAddCate(fetchApiSearch: (keyword: string) => Promise<AxiosResponse<any, any>>) {
-    const [fetchedCates, setFetchedCates] = useState<CateType[]>([]);
-    const [selectedCates, setSelectedCates] = useState<CateType[]>([]);
+export default function useFetchAddCate(fetchApiSearch: (keyword: string) => Promise<{ data: CatesTypeReponse[] }>) {
+    const [fetchedCates, setFetchedCates] = useState<CatesTypeReponse[]>([]);
+    const [selectedCates, setSelectedCates] = useState<CatesTypeReponse[]>([]);
     const handleSearch = async (keyword: string) => {
         try {
             const { data } = await fetchApiSearch(keyword);
@@ -19,10 +14,10 @@ export default function useFetchAddCate(fetchApiSearch: (keyword: string) => Pro
         }
     }
 
-    const handleAddRemoveCate = (cateItem: CateType) => {
-        const index = selectedCates.findIndex((cate: CateType) => cate.id === cateItem.id);
+    const handleAddRemoveCate = (cateItem: CatesTypeReponse) => {
+        const index = selectedCates.findIndex((cate: CatesTypeReponse) => cate.id === cateItem.id);
         if (index !== -1) {
-            setSelectedCates(selectedCates.filter((_cate: CateType) => _cate.id !== cateItem.id));
+            setSelectedCates(selectedCates.filter((_cate: CatesTypeReponse) => _cate.id !== cateItem.id));
         }
         else {
             setSelectedCates([...selectedCates, cateItem]);
@@ -31,6 +26,7 @@ export default function useFetchAddCate(fetchApiSearch: (keyword: string) => Pro
     return {
         fetchedCates,
         selectedCates,
+        setSelectedCates,
         handleSearch,
         handleAddRemoveCate,
     }

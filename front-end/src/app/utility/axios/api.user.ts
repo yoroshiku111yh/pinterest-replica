@@ -1,4 +1,5 @@
 import { headersToUpload, instanceAxios } from ".";
+import { ResponseDataPicture, ResponseGetPictures } from "./api.image";
 
 export const getProfile = async () => {
     try {
@@ -37,7 +38,7 @@ export interface UpdateInfoUserType {
 
 export const updateInfoUser = async (dataInfo: UpdateInfoUserType) => {
     try {
-        const response = await instanceAxios.put(`/user/edit`, dataInfo, { headers: headersToUpload });
+        const response = await instanceAxios.put(`/user`, dataInfo, { headers: headersToUpload });
         return response;
     }
     catch (error: any) {
@@ -142,4 +143,38 @@ export const getFollowing = async (id: number): Promise<{ data: ResponseGetFollo
         }
     }
 }
+export const getImagesSavedByUserId = async (idUser: number, page: number): Promise<ResponseGetPictures> => {
+    try {
+        const response: ResponseGetPictures = await instanceAxios.get(`/user/${idUser}/image/save`, {
+            params: {
+                page: page
+            }
+        });
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}
 
+export const getImagesCreatedByUserId = async (idUser: number, page: number): Promise<ResponseGetPictures> => {
+    try {
+        const response: ResponseGetPictures = await instanceAxios.get(`/user/${idUser}/image/created`, {
+            params: {
+                page: page
+            }
+        });
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}

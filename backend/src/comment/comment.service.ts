@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-const pageSize = 10;
+
 
 @Injectable()
 export class CommentService {
     prisma = new PrismaClient();
     async getComment(idImage: number, page: number) {
+        const pageSize = 3;
         const total = await this.prisma.comment.count({
             where: {
                 image_id: idImage
@@ -35,12 +36,10 @@ export class CommentService {
         return {
             statusCode: HttpStatus.OK,
             message: "list comment",
-            data: {
-                currentPage: index,
-                pageSize: pageSize,
-                totalPage: Math.ceil(total / pageSize),
-                data: comments
-            }
+            currentPage: index,
+            pageSize: pageSize,
+            totalPage: Math.ceil(total / pageSize),
+            data: comments
         }
     }
     async postComment(formComment: { content: string, idUser: number }, idImage: number) {

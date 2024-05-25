@@ -1,5 +1,5 @@
 import { CompressImagePipe } from './../pipes/compress-image/compress-image.pipe';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile, Headers, Put } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { FileCompressed } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
@@ -132,7 +132,7 @@ export class ImageController {
   })
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard, new GuardPermission(TABLE_NAME.IMAGE))
-  @Post("/edit/:id(\\d+)")
+  @Put("/:id(\\d+)")
   edit(@Body() formUpdate: UpdateImageDto,
     @Param("id", ParseIntPipe) id: number) {
     return this.imageService.editInfoImage(formUpdate, id);
@@ -140,7 +140,7 @@ export class ImageController {
 
   @ApiBearerAuth("access-token")
   @UseGuards(JwtAuthGuard, new GuardPermission(TABLE_NAME.IMAGE))
-  @Delete("/delete/:id(\\d+)")
+  @Delete("/:id(\\d+)")
   delete(@Param("id", ParseIntPipe) id: number) {
     return this.imageService.deleteImage(id);
   }

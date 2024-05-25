@@ -71,12 +71,7 @@ export class UserService {
     const follower = await this.prisma.following.count({
       where: {
         following_id: id
-      },
-      // include: {
-      //   users_following_user_idTousers: {
-      //     select: selectField
-      //   }
-      // }
+      }
     });
     const following = await this.prisma.following.count({
       where: {
@@ -95,6 +90,55 @@ export class UserService {
           total: following
         }
       }
+    }
+  }
+  async getListImageCreatedByUserId(page: number, idUser: number) {
+    const pageSize = 10;
+    const total = await this.prisma.images.count({
+      where: {
+        user_id: idUser
+      }
+    });
+    const index = (page - 1) * pageSize;
+    const listImage = await this.prisma.images.findMany({
+      where: {
+        user_id: idUser
+      },
+      take: pageSize,
+      skip: index,
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        images_save: {
+          where: {
+            user_id: idUser
+          }
+        },
+        images_like: {
+          where: {
+            user_id: idUser
+          }
+        }
+      }
+    });
+    const ar = [];
+    for (let i = 0; i < listImage.length; i++) {
+      const img = listImage[i]
+      const isSaved = img.images_save.length > 0 ? true : false;
+      const isLiked = img.images_like.length > 0 ? true : false;
+      delete img.images_save;
+      delete img.images_like;
+      const modified = { ...listImage[i], ...{ isSaved: isSaved, isLiked: isLiked } };
+      ar.push(modified);
+    }
+    return {
+      statusCode: HttpStatus.OK,
+      message: " list images",
+      currentPage: page,
+      pageSize: pageSize,
+      totalPage: Math.ceil(total / pageSize),
+      data: ar
     }
   }
 }

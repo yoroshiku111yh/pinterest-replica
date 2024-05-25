@@ -57,18 +57,51 @@ export class ImageLikeService {
             data: liked ? true : false
         };
     }
-    async getLikedImages(idUser: number) {
-        const likedImages = await this.prisma.images_like.findMany({
+    async getLikedImages(page : number, idUser: number) {
+        const pageSize = 10;
+
+        const total = await this.prisma.images_like.count({
+            where: {
+                user_id: idUser
+            }
+        });
+        const index = (page - 1) * pageSize;
+        const savedImages = await this.prisma.images_like.findMany({
             where: {
                 user_id: idUser
             },
+            take: pageSize,
+            skip: index,
+            orderBy: {
+                createdAt: 'desc'
+            },
             include: {
-                images: true
+                images: {
+                    include: {
+                        images_save: {
+                            where: {
+                                user_id: idUser
+                            }
+                        }
+                    }
+                }
             }
         });
+        const ar = [];
+        for (let i = 0; i < savedImages.length; i++) {
+            const img = savedImages[i]
+            const isSaved = img.images.images_save.length > 0 ? true : false;
+            delete img.images.images_save;
+            const modified = { ...savedImages[i].images, ...{ isSaved: isSaved, isLiked: true } };
+            ar.push(modified);
+        }
         return {
-            statusCode : HttpStatus.OK,
-            data: likedImages
+            statusCode: HttpStatus.OK,
+            message: " list images",
+            currentPage: page,
+            pageSize: pageSize,
+            totalPage: Math.ceil(total / pageSize),
+            data: ar
         }
     }
     async getTotalLikesOfImage(idImage: number){

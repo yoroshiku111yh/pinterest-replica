@@ -1,7 +1,7 @@
 import { HttpCode, HttpStatus, Injectable, Delete } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-const pageSize = 10;
+
 
 @Injectable()
 export class CategoryService {
@@ -14,6 +14,7 @@ export class CategoryService {
         }
     }
     async getImagesByCate(idCate: number, page: number) {
+        const pageSize = 10;
         const total = await this.prisma.images.count({
             where: {
                 deleted: false,

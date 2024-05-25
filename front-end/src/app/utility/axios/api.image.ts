@@ -1,4 +1,5 @@
 import { TypeResponse, headersToUpload, instanceAxios } from ".";
+import { CatesTypeReponse } from "./api.cates";
 
 export interface UploadImageType {
     image: File,
@@ -32,10 +33,11 @@ export interface ResponseDataPicture {
     url: string,
     width: number,
     height: number,
-    isSaved: boolean
+    isSaved ?: boolean,
+    isLiked ?: boolean
 }
 
-interface ResponseGetPictures extends TypeResponse {
+export interface ResponseGetPictures extends TypeResponse {
     data: ResponseDataPicture[],
     currentPage: number,
     pageSize: number,
@@ -105,9 +107,69 @@ export const toggleLikeImage = async (id: number) => {
     }
 }
 
-export const getTotalLikes = async (id: number) => {
+export const getTotalLikes = async (id: number): Promise<{ data: number }> => {
     try {
         const response = await instanceAxios.get(`/image/${id}/total/like`);
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}
+
+
+export interface ResponseGetImageById extends ResponseDataPicture {
+    cates: CatesTypeReponse[],
+    user: {
+        avatar: string,
+        email: string,
+        fullname: string,
+        id: number
+    }
+}
+
+export const getImageById = async (id: number): Promise<{ data: ResponseGetImageById }> => {
+    try {
+        const response = await instanceAxios.get(`/image/${id}`);
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}
+
+
+export interface EditImageType {
+    name: string,
+    description: string,
+    cates: string
+}
+
+export const fetchEditImage = async (data: EditImageType, idImage: number) => {
+    try {
+        const response = await instanceAxios.put(`/image/${idImage}`, data);
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}
+
+export const fetchDeleteImageById = async (idImage : number) => {
+    try {
+        const response = await instanceAxios.delete(`/image/${idImage}`)
         return response;
     }
     catch (error: any) {

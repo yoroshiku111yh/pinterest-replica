@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Req, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Req, UseInterceptors, UploadedFile, Put, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,7 +12,7 @@ import { CompressImagePipe } from 'src/pipes/compress-image/compress-image.pipe'
 import { UserFollowingService } from 'src/user-following/user-following.service';
 import { ImageLikeService } from 'src/image-like/image-like.service';
 import { ImageSaveService } from 'src/image-save/image-save.service';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags("User")
@@ -69,7 +69,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor("avatar", {
     storage: memoryStorage()
   }))
-  @Put("/edit")
+  @Put("")
   update(@UploadedFile(CompressImagePipe) avatar: FileCompressed[] | undefined, @Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
     const { user } = req;
     const pathAvatar = !avatar ? null : avatar[0]
@@ -113,21 +113,33 @@ export class UserController {
     return this.userFollowingService.toggleFollow(payload.id, id);
   }
 
+  @ApiQuery({ name: 'page', required: true, type: Number, description: 'Page number' })
   @ApiParam({
     name: "id",
     example: 6
   })
   @Get(":id(\\d+)/image/like")
-  getLikeImages(@Param("id", ParseIntPipe) id: number) {
-    return this.imageLikeService.getLikedImages(id);
+  getLikeImages(@Param("id", ParseIntPipe) id: number, @Query("page", ParseIntPipe) page: number) {
+    return this.imageLikeService.getLikedImages(page, id);
   }
 
+  @ApiQuery({ name: 'page', required: true, type: Number, description: 'Page number' })
   @ApiParam({
     name: "id",
     example: 6
   })
   @Get(":id(\\d+)/image/save")
-  getSaveImages(@Param("id", ParseIntPipe) id: number) {
-    return this.imageSaveService.getSavedImages(id);
+  getSaveImages(@Param("id", ParseIntPipe) id: number, @Query("page", ParseIntPipe) page: number) {
+    return this.imageSaveService.getSavedImages(page, id);
+  }
+
+  @ApiQuery({ name: 'page', required: true, type: Number, description: 'Page number' })
+  @ApiParam({
+    name: "id",
+    example: 6
+  })
+  @Get(":id(\\d+)/image/created")
+  getCreatedImages(@Param("id", ParseIntPipe) id: number, @Query("page", ParseIntPipe) page: number) {
+    return this.userService.getListImageCreatedByUserId(page, id);
   }
 }

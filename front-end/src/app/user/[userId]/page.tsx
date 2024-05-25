@@ -1,5 +1,7 @@
+
 import ButtonInfo from "./ButtonInfo";
 import Info from "./Info";
+import MasonryTab from "./MasonryTab";
 
 export default async function Page({ params }: { params: { userId: string } }) {
   const id = Number(params.userId);
@@ -7,11 +9,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
     <div className="flex flex-col items-center gap-5">
       <Info id={id} />
       <ButtonInfo idUser={id} />
-      <div className="flex flex-row gap-7 [&>span]:text-base [&>span]:font-semibold">
-        <span>Đã tạo</span>
-        <span>Đã lưu</span>
-      </div>
-      <div className="pt-10">{/* <GridLayoutPicture /> */}</div>
+      <MasonryTab idUser={id} />
     </div>
   );
 }

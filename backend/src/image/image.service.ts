@@ -5,8 +5,9 @@ import { UpdateImageDto } from './dto/update-image.dto';
 import { PrismaClient } from '@prisma/client';
 import { TokenDecodePayload, TokenPayload } from 'src/auth/dto/tokenPayload.dto';
 import { ImageCategoryService } from 'src/image-category/image-category.service';
+import { ResponseCateImageDto } from 'src/image-category/dto/responseCateImage.dto';
 
-const pageSize = 10;
+
 
 @Injectable()
 export class ImageService {
@@ -26,23 +27,39 @@ export class ImageService {
             avatar: true,
             email: true,
           }
-        }
+        },
+        // images_category : {
+        //   select: {
+        //     cate_id : true
+        //   }
+        // }
       }
     });
     if (!image) {
       throw new HttpException("Image not found", HttpStatus.NOT_FOUND);
     }
+    const cates = await this.prisma.images_category.findMany({
+      where : {
+        image_id : id
+      },
+      include : {
+        categories : true
+      }
+    });
+    const catesAr = cates.reduce((result : ResponseCateImageDto[], cate) => {
+      return result.concat(cate.categories);
+    }, []);
     return {
       statusCode: HttpStatus.OK,
       message: "Image found",
       data: {
-        data: {
-          ...image
-        }
+        ...image,
+        ...{cates : catesAr}
       }
     }
   }
   async findAll(page = 1, token = "") {
+    const pageSize = 10;
     let userId = 0;
     try {
       const decodeToken: TokenDecodePayload = await this.jwtService.verify(token, {
@@ -73,19 +90,29 @@ export class ImageService {
             select: {
               user_id : true
             }
+          },
+          images_like : {
+            where: {
+              user_id: userId
+            },
+            select: {
+              user_id : true
+            }
           }
         }
       });
       const imageList = list.map(image => {
         const obj = {
           ...image,
-          isSaved: image.images_save.length > 0
+          isSaved: image.images_save.length > 0,
+          isLiked : image.images_like.length > 0
         };
         delete obj.images_save;
+        delete obj.images_like;
         return obj;
       });
       return {
-        statusCode: HttpStatus.FOUND,
+        statusCode: HttpStatus.OK,
         message: " list images",
         currentPage: page,
         pageSize: pageSize,
@@ -162,7 +189,6 @@ export class ImageService {
         return finalImage;
       })
     )
-    //await this.imageCategoryService.addCateToImage(uploaded.id, arCate);
     return {
       statusCode: HttpStatus.OK,
       message: "Uploaded images success",

@@ -1,19 +1,18 @@
 import Image from "next/image";
 import LoadMasonryImages from "./LoadMasonryImages";
 import { ENV } from "@/app/utility/global-variable";
-import Link from "next/link";
-import { BlockInputComment, Comment } from "./Comment";
 import BlockInfoAndComment from "./BlockInfoAndComment";
+import { redirect } from "next/navigation";
 
 async function getDataImage(id: number): Promise<any> {
   const response = await fetch(`${ENV.BASE_URL}/image/${id}`, {
-    cache : "force-cache",
     next : {
-      revalidate : 600
+      revalidate : 60
     }
   });
   if (!response.ok) {
-    throw new Error(`Network response was not ok: ${response.statusText}`);
+    //throw new Error(`Network response was not ok: ${response.statusText}`);
+    redirect("/");
   }
   const { data } = await response.json();
   return data;
@@ -24,9 +23,7 @@ export default async function Page({
 }: {
   params: { imageId: string };
 }) {
-  const res = await getDataImage(Number(params.imageId));
-  const { data } = res;
-  console.log(data);
+  const data = await getDataImage(Number(params.imageId));
   return (
     <>
       <div className=" bg-white lg:max-w-[1016px] m-auto h-[90vh] lg:min-h-[400px] rounded-lg overflow-hidden relative shadow-2xl">
@@ -43,8 +40,6 @@ export default async function Page({
           </div>
           <BlockInfoAndComment
             idImage={Number(params.imageId)}
-            title={data.name}
-            description={data.description}
             idUser={data.user_id}
           />
         </div>
@@ -53,7 +48,7 @@ export default async function Page({
         <h3 className="text-2xl text-center font-bold pb-10">
           Thêm nội dung để khám phá
         </h3>
-        <LoadMasonryImages />
+        <LoadMasonryImages idImagePage={Number(params.imageId)} />
       </div>
     </>
   );

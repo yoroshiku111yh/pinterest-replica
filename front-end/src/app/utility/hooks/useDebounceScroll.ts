@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
 import { RefObject, useEffect } from "react";
 
-interface TypeProps {
+export interface TypePropsDebounceScroll {
     wait?: number,
     callback: () => void,
     element?: RefObject<HTMLElement> | null,
@@ -9,7 +9,7 @@ interface TypeProps {
 
 }
 
-export const useDebouncedScroll = ({callback, wait = 300, rate = 0.95, element = null}: TypeProps) => {
+export const useDebouncedScroll = ({callback, wait = 300, rate = 0.95, element = null}: TypePropsDebounceScroll) => {
     useEffect(() => {
         const handleScroll = debounce(() => {
             const target = element?.current ?? document.documentElement;
