@@ -10,6 +10,7 @@ import { TokenPayload } from "@/app/utility/type";
 import { ENV } from "@/app/utility/global-variable";
 import useTokenDecode from "@/app/utility/hooks/useTokenDecode";
 import { localStorageFn } from "@/app/utility/axios";
+import { logoutApi } from "@/app/utility/axios/api.auth";
 
 export default function Header() {
   const [popupRegister, setPopupRegister] = useState(false);
@@ -29,6 +30,11 @@ export default function Header() {
     document.body.style.overflow = "hidden";
     setPopupLogin(true);
   };
+
+  const clickLogout = () => {
+    logoutApi();
+  }
+
   return (
     <header className="w-full px-4 py-2 fixed bg-white shadow-sm z-50">
       <nav className="flex flex-row gap-3 justify-center items-center">
@@ -71,20 +77,61 @@ export default function Header() {
         </div>
         {decode && (
           <>
-            <Link
-              href={`/user/${decode.id}`}
-              className="w-12 block aspect-square rounded-full overflow-hidden bg-zinc-700"
-            >
-              {decode.avatar && (
-                <Image 
-                  className="fit-cover"
-                  src={`${ENV.BASE_URL}/${decode.avatar}`}
-                  alt="avatar"
-                  width={100}
-                  height={100}
-                />
-              )}
-            </Link>
+            <>
+              <div className="hs-dropdown relative inline-flex">
+                <button
+                  id="hs-dropdown-custom-trigger"
+                  type="button"
+                  className="hs-dropdown-toggle w-12 block aspect-square rounded-full overflow-hidden bg-zinc-700"
+                >
+                  {decode.avatar && (
+                    <Image
+                      className="fit-cover"
+                      src={`${ENV.BASE_URL}/${decode.avatar}`}
+                      alt="avatar"
+                      width={100}
+                      height={100}
+                    />
+                  )}
+                  <span className="text-gray-600 font-medium truncate max-w-[7.5rem]">
+                    Maria
+                  </span>
+                  <svg
+                    className="hs-dropdown-open:rotate-180 size-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                <div
+                  className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2 mt-2"
+                  aria-labelledby="hs-dropdown-custom-trigger"
+                >
+                  <Link
+                    className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                    href={`/user/${decode.id}`}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    onClick={clickLogout}
+                    className=" text-red-600 flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm hover:bg-gray-100 focus:outline-none focus:bg-gray-100 "
+                    href="#"
+                  >
+                    Logout
+                  </Link>
+                </div>
+              </div>
+            </>
           </>
         )}
         {!token && (

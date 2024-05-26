@@ -4,40 +4,42 @@ import { useForm, Resolver } from "react-hook-form";
 import useTokenDecode from "../utility/hooks/useTokenDecode";
 import { UploadImageType, uploadImage } from "../utility/axios/api.image";
 import { debounce } from "lodash";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import useFetchAddCate from "../utility/hooks/useFetchAddCate";
 import Image from "next/image";
 import { searchCate } from "../utility/axios/api.search";
 import { CatesTypeReponse } from "../utility/axios/api.cates";
+import ErrorLayoutUnAuthor from "../components/errors/401";
 
 export default function Page() {
-  const { token, decode } = useTokenDecode();
-  return <>{token ? <UploadImage /> : <h1>Unauthorization</h1>}</>;
+  const { decode } = useTokenDecode();
+  return <>{decode ? <UploadImage /> : <ErrorLayoutUnAuthor />}</>;
 }
 
 type FormUploadImageType = Omit<UploadImageType, "image" | "cates"> & {
   image: FileList;
 };
-const resolver: Resolver<FormUploadImageType> = async (values) => {
-  const errors: Record<string, string> = {};
-  if(values.name.length > 100 || values.name.length === 0){
-    errors.name = "Name length must from 0 to 100 charactes";
-  }
-  if(values.image.length !== 0 && values.image[0].size > 5000*1000){
-    errors.image = "Limit file below 5mb";
-  }
-  if(values.description.length > 600){
-    errors.description = "description length must from 0 to 600 charactes";
-  }
-  return {
-    errors,
-    values,
-  };
-};
 
 const UploadImage = () => {
-
+  const resolver: Resolver<FormUploadImageType> = async (values) => {
+    setSuccessMess(null);
+    const errors: Record<string, string> = {};
+    if(values.name.length > 50 || values.name.length === 0){
+      errors.name = "Name length must from 0 to 50 charactes";
+    }
+    if(values.image.length !== 0 && values.image[0].size > 5000*1000){
+      errors.image = "Limit file below 5mb";
+    }
+    if(values.description.length > 200){
+      errors.description = "description length must from 0 to 200 charactes";
+    }
+    return {
+      errors,
+      values,
+    };
+  };
+  const [successMess, setSuccessMess] = useState<string | null > (null);
   const ref = useRef(null);
   const [isPopup, setIsPopup] = useState<boolean>(false);
   const [previewedImage, setPreviewedImage] = useState<string | null>(null);
@@ -46,7 +48,9 @@ const UploadImage = () => {
   const handleUpload = async(dataUpload : UploadImageType) => {
     try {
       const data = await uploadImage(dataUpload);
-      console.log(data);
+      setSuccessMess("Uploaded successfully");
+      reset();
+      setPreviewedImage(null);
     }
     catch(err){
       console.log(err);
@@ -55,6 +59,7 @@ const UploadImage = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormUploadImageType>({ resolver });
   const onSubmit = handleSubmit(async (data) => {
@@ -74,13 +79,13 @@ const UploadImage = () => {
   });
   const { fetchedCates, selectedCates, handleSearch, handleAddRemoveCate } =
     useFetchAddCate(searchCate);
-  let debounceFnSearchCate = debounce((value: string) => {
+  let debounceFnSearchCate = useCallback(debounce((value: string) => {
     if (value.length > 1) {
       handleSearch(value);
     } else {
       setIsPopup(false);
     }
-  }, 500);
+  }, 500), []);
   useOnClickOutside(ref, () => {
     setIsPopup(false);
     setSearchString("");
@@ -99,7 +104,7 @@ const UploadImage = () => {
   return (
     <form onSubmit={onSubmit}>
       <div className="flex flex-row gap-10 max-w-[1087px] m-auto px-4 py-7 bg-white rounded-xl shadow-md">
-        <div className=" w-1/2 flex flex-col gap-4">
+        <div className=" w-1/2 flex flex-col gap-4 relative">
           <>
             <div className="relative cursor-pointer rounded-2xl border-dashed border-2 border-slate-600 aspect-[8/10] bg-zinc-300 flex justify-center flex-col items-center text-base relative">
               {previewedImage ? (
@@ -139,6 +144,7 @@ const UploadImage = () => {
                 accept="image/x-png,image/jpeg"
                 className=" cursor-pointer absolute top-0 left-0 w-full h-full opacity-0"
               />
+              <div className="error-note absolute bottom-0 text-center left-0 right-0">{errors.image && errors.image.toString()}</div>
             </div>
           </>
         </div>
@@ -152,6 +158,7 @@ const UploadImage = () => {
                   {...register("name", { required: true })}
                 />
               </div>
+              <div className="error-note">{errors.name && errors.name.toString()}</div>
             </div>
             <div className="flex flex-col gap-2">
               <label>Mô tả</label>
@@ -161,6 +168,7 @@ const UploadImage = () => {
                   {...register("description")}
                 />
               </div>
+              <div className="error-note">{errors.description && errors.description.toString()}</div>
             </div>
             <div className="flex flex-col gap-2">
               <label>Chủ đề được gắn thẻ (0)</label>
@@ -222,6 +230,7 @@ const UploadImage = () => {
               </div>
             </div>
             <div className="text-right">
+              <div className="text-green-500">{successMess}</div>
               <button
                 type="submit"
                 className="btn-border-style bg-red-700 text-white min-w-32 shadow-md"

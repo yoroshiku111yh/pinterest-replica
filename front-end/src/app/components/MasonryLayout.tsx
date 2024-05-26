@@ -12,11 +12,12 @@ import useTokenDecode from "../utility/hooks/useTokenDecode";
 import { useState } from "react";
 
 interface TypeProps {
-  listPicture: ResponseDataPicture[];
+  listPicture: ResponseDataPicture[]
+  disableInteract ?: boolean
 }
 
 export default function MasonryLayout(props: TypeProps) {
-  const { listPicture } = props;
+  const { listPicture , disableInteract } = props;
   const { token, decode } = useTokenDecode();
   const isLoggedIn = token ? true : false;
   const [parent] = useAutoAnimate({
@@ -35,7 +36,7 @@ export default function MasonryLayout(props: TypeProps) {
               href={`/image/${item.id}`}
               className="absolute top-0 left-0 w-full h-full z-10"
             ></Link>
-            {isLoggedIn && (
+            {isLoggedIn && !disableInteract && (
               <LayerInteract
                 liked={item.isLiked}
                 saved={item.isSaved}

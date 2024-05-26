@@ -5,17 +5,17 @@ import BlockInfoAndComment from "./BlockInfoAndComment";
 import { redirect } from "next/navigation";
 
 async function getDataImage(id: number): Promise<any> {
-  const response = await fetch(`${ENV.BASE_URL}/image/${id}`, {
-    next : {
-      revalidate : 60
-    }
-  });
-  if (!response.ok) {
-    //throw new Error(`Network response was not ok: ${response.statusText}`);
-    redirect("/");
+  try {
+    const response = await fetch(`${ENV.BASE_URL}/image/${id}`, {
+      next: {
+        revalidate: 60,
+      },
+    });
+    const { data } = await response.json();
+    return data;
+  } catch (err) {
+    return null;
   }
-  const { data } = await response.json();
-  return data;
 }
 
 export default async function Page({
@@ -24,6 +24,9 @@ export default async function Page({
   params: { imageId: string };
 }) {
   const data = await getDataImage(Number(params.imageId));
+  if(!data){
+    redirect("/not-found");
+  }
   return (
     <>
       <div className=" bg-white lg:max-w-[1016px] m-auto h-[90vh] lg:min-h-[400px] rounded-lg overflow-hidden relative shadow-2xl">

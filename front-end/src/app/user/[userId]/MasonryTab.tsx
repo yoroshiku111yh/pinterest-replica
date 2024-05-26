@@ -10,6 +10,7 @@ import {
   getImagesSavedByUserId,
 } from "@/app/utility/axios/api.user";
 import { useDebouncedScroll } from "@/app/utility/hooks/useDebounceScroll";
+import useTokenDecode from "@/app/utility/hooks/useTokenDecode";
 import { useEffect, useState } from "react";
 
 enum TypeTab {
@@ -19,6 +20,15 @@ enum TypeTab {
 
 export default function MasonryTab({ idUser }: { idUser: number }) {
   const [tab, setTab] = useState<TypeTab>(TypeTab.SAVED);
+  const [isVisitGuest, setIsVisitGuest] = useState<boolean>(false);
+  const {decode} = useTokenDecode();
+  useEffect(() => {
+    if (decode) {
+      if(decode.id !== idUser){
+        setIsVisitGuest(true);
+      }
+    }
+  }, [decode]);
   return (
     <>
       <div className="flex flex-row gap-7 [&>span]:text-base [&>span]:font-semibold">
@@ -51,12 +61,14 @@ export default function MasonryTab({ idUser }: { idUser: number }) {
         {tab === TypeTab.SAVED && (
           <MasonryListPicture
             idUser={idUser}
+            isVisitGuest={isVisitGuest}
             promiseCall={getImagesSavedByUserId}
           />
         )}
         {tab === TypeTab.CREATED && (
           <MasonryListPicture
             idUser={idUser}
+            isVisitGuest={isVisitGuest}
             promiseCall={getImagesCreatedByUserId}
           />
         )}
@@ -72,9 +84,11 @@ type PromiselFntype = (
 
 const MasonryListPicture = ({
   idUser,
+  isVisitGuest,
   promiseCall,
 }: {
   idUser: number;
+  isVisitGuest ?: boolean,
   promiseCall: PromiselFntype;
 }) => {
   const [page, setPage] = useState<number>(1);
@@ -106,5 +120,5 @@ const MasonryListPicture = ({
   useEffect(() => {
     handleGetListPictureSaved();
   }, [page]);
-  return <>{listData && <MasonryLayout listPicture={listData} />}</>;
+  return <>{listData && <MasonryLayout disableInteract={isVisitGuest} listPicture={listData} />}</>;
 };

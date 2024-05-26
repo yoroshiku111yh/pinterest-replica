@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorLayoutUnAuthor from "@/app/components/errors/401";
 import { CatesTypeReponse } from "@/app/utility/axios/api.cates";
 import {
   EditImageType,
@@ -14,27 +15,29 @@ import useFetchAddCate from "@/app/utility/hooks/useFetchAddCate";
 import useTokenDecode from "@/app/utility/hooks/useTokenDecode";
 import { debounce } from "lodash";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, Resolver } from "react-hook-form";
 import { useOnClickOutside } from "usehooks-ts";
 
 type FormEditImageType = Omit<EditImageType, "cates">;
-const resolver: Resolver<FormEditImageType> = async (values) => {
-  const errors: Record<string, string> = {};
-  if (values.name.length > 50 || values.name.length < 1) {
-    errors.name = "Name length must be in range from 0 to 50 characters";
-  }
-  if (values.description.length > 200) {
-    errors.description =
-      "Description length must be in range from 0 to 200 characters";
-  }
-  return {
-    errors,
-    values,
-  };
-};
 
 export default function Page({ params }: { params: { imageId: string } }) {
+  const resolver: Resolver<FormEditImageType> = async (values) => {
+    setSuccessMess(null);
+    const errors: Record<string, string> = {};
+    if (values.name.length > 50 || values.name.length < 1) {
+      errors.name = "Name length must be in range from 0 to 50 characters";
+    }
+    if (values.description.length > 200) {
+      errors.description =
+        "Description length must be in range from 0 to 200 characters";
+    }
+    return {
+      errors,
+      values,
+    };
+  };
+  const [successMess, setSuccessMess] = useState<string | null>(null);
   const ref = useRef(null);
   const [isPopup, setIsPopup] = useState<boolean>(false);
   const [searchString, setSearchString] = useState<string>("");
@@ -50,26 +53,25 @@ export default function Page({ params }: { params: { imageId: string } }) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormEditImageType>({ resolver });
-  let debounceFnSearchCate = debounce((value: string) => {
+  let debounceFnSearchCate = useCallback(debounce((value: string) => {
     if (value.length > 1) {
       handleSearch(value);
     } else {
       setIsPopup(false);
     }
-  }, 500);
+  }, 500), []);
   const fetchImageById = async (id: number) => {
     try {
       const { data } = await getImageById(id);
-      if (data.user_id !== decode?.id) {
-        window.location.href = "/errors/401";
-      } else {
+      if (data.user_id == decode?.id) {
         setInfoImage(data);
         setSelectedCates(data.cates);
       }
     } catch (err) {
-      console.log(err);
+      window.location.href = "/not-found";
     }
   };
   useOnClickOutside(ref, () => {
@@ -79,7 +81,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
   const handleEditImage = async (formData: EditImageType) => {
     try {
       await fetchEditImage(formData, Number(params.imageId));
-      console.log("success");
+      setSuccessMess("Edited successfully");
     } catch (err) {
       console.log(err);
     }
@@ -116,7 +118,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
   });
   return (
     <>
-      {!decode && !infoImage && <h1>Unauthor</h1>}
+      {(!decode || !infoImage) && <ErrorLayoutUnAuthor />}
       {infoImage && (
         <div className="flex flex-row gap-10 max-w-[1087px] m-auto px-4 py-7 bg-white rounded-xl shadow-md">
           <div className=" w-1/2 flex flex-col gap-4">
@@ -164,6 +166,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
                     {...register("name", { required: true })}
                   />
                 </div>
+                <div className="error-note">{errors.name && errors.name.toString()}</div>
               </div>
               <div className="flex flex-col gap-2">
                 <label>Mô tả</label>
@@ -174,6 +177,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
                     {...register("description")}
                   />
                 </div>
+                <div className="error-note">{errors.description && errors.description.toString()}</div>
               </div>
               <div className="flex flex-col gap-2">
                 <label>Chủ đề được gắn thẻ (0)</label>
@@ -239,6 +243,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
                 </div>
               </div>
               <div className="text-right">
+                <div className="text-green-500">{successMess}</div>
                 <button
                   type="submit"
                   className="btn-border-style bg-red-700 text-white min-w-32 shadow-md"

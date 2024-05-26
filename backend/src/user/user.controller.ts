@@ -13,6 +13,7 @@ import { UserFollowingService } from 'src/user-following/user-following.service'
 import { ImageLikeService } from 'src/image-like/image-like.service';
 import { ImageSaveService } from 'src/image-save/image-save.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ImageService } from 'src/image/image.service';
 
 
 @ApiTags("User")
@@ -22,7 +23,8 @@ export class UserController {
     private readonly userService: UserService,
     private readonly userFollowingService: UserFollowingService,
     private readonly imageLikeService: ImageLikeService,
-    private readonly imageSaveService: ImageSaveService
+    private readonly imageSaveService: ImageSaveService,
+    private readonly imageService : ImageService
   ) { }
   prisma = new PrismaClient();
 
@@ -140,6 +142,7 @@ export class UserController {
   })
   @Get(":id(\\d+)/image/created")
   getCreatedImages(@Param("id", ParseIntPipe) id: number, @Query("page", ParseIntPipe) page: number) {
-    return this.userService.getListImageCreatedByUserId(page, id);
+    return this.imageService.getListImageCreatedByUserId(page, id);
   }
 }
+

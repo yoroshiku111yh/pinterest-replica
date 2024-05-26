@@ -1,36 +1,45 @@
 "use client";
 
+import ErrorLayoutUnAuthor from "@/app/components/errors/401";
 import { localStorageFn } from "@/app/utility/axios";
-import { UpdateInfoUserType, getProfile, updateInfoUser } from "@/app/utility/axios/api.user";
+import {
+  UpdateInfoUserType,
+  getProfile,
+  updateInfoUser,
+} from "@/app/utility/axios/api.user";
 import { ENV } from "@/app/utility/global-variable";
 import { ResponseUserType } from "@/app/utility/type";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useForm, Resolver } from "react-hook-form";
 
-type InfoUserType = Omit<UpdateInfoUserType,"avatar"> & {
-  avatar : FileList
-}
-
-const resolver: Resolver<InfoUserType> = async (values) => {
-  const errors: Record<string, string> = {};
-  const {avatar} = values;
-  if (values.fullname.length < 3) {
-    errors.fullname = "Fullname must be at least 3 character long";
-  }
-  if ((values.age < 10 && values.age > 200) || isNaN(values.age)) {
-    errors.age = "Age is not valid";
-  }
-  if(avatar[0] && avatar[0].size > 5000*1000){ 
-    errors.age = "Limit file below 5mb";
-  }
-  return {
-    errors,
-    values,
-  };
+type InfoUserType = Omit<UpdateInfoUserType, "avatar"> & {
+  avatar: FileList;
 };
 
 export default function Page() {
+  const resolver: Resolver<InfoUserType> = async (values) => {
+    setSuccessMess(null);
+    const errors: Record<string, string> = {};
+    const { avatar } = values;
+    if (values.fullname.length < 3) {
+      errors.fullname = "Fullname must be at least 3 character long";
+    }
+    if (
+      Number(values.age) < 10 ||
+      Number(values.age) > 100 ||
+      isNaN(values.age)
+    ) {
+      errors.age = "Age is not valid";
+    }
+    if (avatar[0] && avatar[0].size > 5000*1000) {
+      errors.avatar = "Limit file below 5mb";
+    }
+    return {
+      errors,
+      values,
+    };
+  };
   const {
     register,
     handleSubmit,
@@ -38,11 +47,13 @@ export default function Page() {
   } = useForm<InfoUserType>({ resolver });
   const [user, setInfo] = useState<ResponseUserType | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [successMess, setSuccessMess] = useState<string | null>(null);
   const fetchProfile = async () => {
     try {
       const res = await getProfile();
       setInfo(res.data);
-      const addPath = res.data.info.avatar && `${ENV.BASE_URL}/${res.data.info.avatar}`
+      const addPath =
+        res.data.info.avatar && `${ENV.BASE_URL}/${res.data.info.avatar}`;
       setAvatarPreview(addPath);
     } catch (err) {
       console.log(err);
@@ -52,29 +63,28 @@ export default function Page() {
     fetchProfile();
   }, []);
   const onSubmit = handleSubmit(async (data) => {
+    setSuccessMess(null);
     try {
       const response = await updateInfoUser({
-        age : data.age,
-        fullname : data.fullname,
-        avatar : data.avatar[0] || null
+        age: data.age,
+        fullname: data.fullname,
+        avatar: data.avatar[0] || null,
       });
       localStorageFn.token = response.data;
-      console.log("success")
-    }
-    catch(error){
+      setSuccessMess("Updated successfully");
+    } catch (error) {
       console.error("Error when update info user :" + error);
+      setSuccessMess(null);
     }
   });
   const previewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
-    if(e.target.files){
+    if (e.target.files) {
       const path = URL.createObjectURL(e.target.files[0]);
       setAvatarPreview(path);
-    }
-    
-    else {
+    } else {
       setAvatarPreview(null);
     }
-  }
+  };
   return (
     <>
       {user ? (
@@ -84,7 +94,7 @@ export default function Page() {
             Hãy giữ riêng tư thông tin cá nhân của bạn. Thông tin bạn thêm vào
             đây hiển thị cho bất kỳ ai có thể xem hồ sơ của bạn.
           </p>
-          <div >
+          <div>
             <form className="flex flex-col gap-4" onSubmit={onSubmit}>
               <div className="flex flex-row gap-3 items-center">
                 <div className="w-20 block aspect-square rounded-full overflow-hidden bg-zinc-700">
@@ -98,11 +108,21 @@ export default function Page() {
                     />
                   )}
                 </div>
-                <div className=" cursor-pointer btn-border-style bg-zinc-300 shadow-sm relative">
-                  Thay đổi
-                  <input className=" cursor-pointer opacity-0 absolute w-full h-full top-0 left-0" type="file" accept="image/*" {...register("avatar", {
-                    onChange : previewAvatar
-                  })} />
+                <div>
+                  <div className=" cursor-pointer btn-border-style bg-zinc-300 shadow-sm relative">
+                    Thay đổi
+                    <input
+                      className=" cursor-pointer opacity-0 absolute w-full h-full top-0 left-0"
+                      type="file"
+                      accept="image/*"
+                      {...register("avatar", {
+                        onChange: previewAvatar,
+                      })}
+                    />
+                  </div>
+                  <div className="error-note">
+                    {errors.avatar && errors.avatar.toString()}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
@@ -114,6 +134,9 @@ export default function Page() {
                     {...register("fullname", { required: true })}
                   />
                 </div>
+                <div className="error-note">
+                  {errors.fullname && errors.fullname.toString()}
+                </div>
               </div>
               <div className="flex flex-col gap-3">
                 <label>Tuổi</label>
@@ -124,6 +147,9 @@ export default function Page() {
                     {...register("age")}
                   />
                 </div>
+                <div className="error-note">
+                  {errors.age && errors.age.toString()}
+                </div>
               </div>
               <div className="text-center pt-5">
                 <button
@@ -133,11 +159,14 @@ export default function Page() {
                   Cập nhật
                 </button>
               </div>
+              <div className="text-center text-green-500 py-2">
+                {successMess}
+              </div>
             </form>
           </div>
         </div>
       ) : (
-        <h1>UnAuthor</h1>
+        <ErrorLayoutUnAuthor />
       )}
     </>
   );

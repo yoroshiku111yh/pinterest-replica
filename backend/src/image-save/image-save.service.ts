@@ -69,7 +69,10 @@ export class ImageSaveService {
         const index = (page - 1) * pageSize;
         const savedImages = await this.prisma.images_save.findMany({
             where: {
-                user_id: idUser
+                user_id: idUser,
+                images : {
+                    deleted : false
+                }
             },
             take: pageSize,
             skip: index,

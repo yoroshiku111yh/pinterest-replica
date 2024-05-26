@@ -27,26 +27,21 @@ export class ImageService {
             avatar: true,
             email: true,
           }
-        },
-        // images_category : {
-        //   select: {
-        //     cate_id : true
-        //   }
-        // }
+        }
       }
     });
     if (!image) {
       throw new HttpException("Image not found", HttpStatus.NOT_FOUND);
     }
     const cates = await this.prisma.images_category.findMany({
-      where : {
-        image_id : id
+      where: {
+        image_id: id
       },
-      include : {
-        categories : true
+      include: {
+        categories: true
       }
     });
-    const catesAr = cates.reduce((result : ResponseCateImageDto[], cate) => {
+    const catesAr = cates.reduce((result: ResponseCateImageDto[], cate) => {
       return result.concat(cate.categories);
     }, []);
     return {
@@ -54,22 +49,13 @@ export class ImageService {
       message: "Image found",
       data: {
         ...image,
-        ...{cates : catesAr}
+        ...{ cates: catesAr }
       }
     }
   }
-  async findAll(page = 1, token = "") {
+  async findAll(page = 1, payload: TokenPayload | null) {
     const pageSize = 10;
-    let userId = 0;
-    try {
-      const decodeToken: TokenDecodePayload = await this.jwtService.verify(token, {
-        secret: process.env.SECRECT_KEY,
-      });
-      userId = decodeToken.id;
-    }
-    catch (err) {
-      console.log(err)
-    }
+    let userId = payload ? payload.id : 0;
     try {
       const total = await this.prisma.images.count();
       const index = (page - 1) * pageSize;
@@ -88,15 +74,15 @@ export class ImageService {
               user_id: userId
             },
             select: {
-              user_id : true
+              user_id: true
             }
           },
-          images_like : {
+          images_like: {
             where: {
               user_id: userId
             },
             select: {
-              user_id : true
+              user_id: true
             }
           }
         }
@@ -105,7 +91,7 @@ export class ImageService {
         const obj = {
           ...image,
           isSaved: image.images_save.length > 0,
-          isLiked : image.images_like.length > 0
+          isLiked: image.images_like.length > 0
         };
         delete obj.images_save;
         delete obj.images_like;
@@ -252,6 +238,56 @@ export class ImageService {
     return {
       statusCode: HttpStatus.OK,
       message: "Delete image success",
+    }
+  }
+  async getListImageCreatedByUserId(page: number, idUser: number) {
+    const pageSize = 10;
+    const total = await this.prisma.images.count({
+      where: {
+        user_id: idUser
+      }
+    });
+    const index = (page - 1) * pageSize;
+    const listImage = await this.prisma.images.findMany({
+      where: {
+        user_id: idUser,
+        deleted: false
+      },
+      take: pageSize,
+      skip: index,
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        images_save: {
+          where: {
+            user_id: idUser
+          }
+        },
+        images_like: {
+          where: {
+            user_id: idUser
+          }
+        }
+      }
+    });
+    const ar = [];
+    for (let i = 0; i < listImage.length; i++) {
+      const img = listImage[i]
+      const isSaved = img.images_save.length > 0 ? true : false;
+      const isLiked = img.images_like.length > 0 ? true : false;
+      delete img.images_save;
+      delete img.images_like;
+      const modified = { ...listImage[i], ...{ isSaved: isSaved, isLiked: isLiked } };
+      ar.push(modified);
+    }
+    return {
+      statusCode: HttpStatus.OK,
+      message: " list images",
+      currentPage: page,
+      pageSize: pageSize,
+      totalPage: Math.ceil(total / pageSize),
+      data: ar
     }
   }
 }

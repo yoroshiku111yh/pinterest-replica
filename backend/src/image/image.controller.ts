@@ -1,5 +1,5 @@
 import { CompressImagePipe } from './../pipes/compress-image/compress-image.pipe';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile, Headers, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, UploadedFiles, UseGuards, Req, Query, HttpException, HttpStatus, UploadedFile, Headers, Put, UsePipes } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { FileCompressed } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
@@ -13,6 +13,7 @@ import { GuardPermission, TABLE_NAME } from 'src/guards/permission.guard';
 import { ImageSaveService } from 'src/image-save/image-save.service';
 import { ImageLikeService } from 'src/image-like/image-like.service';
 import { CommentService } from 'src/comment/comment.service';
+import { JwtDecodeNotRequired } from 'src/interceptors/decode-jwt-not-required';
 
 
 @ApiTags("Image")
@@ -26,14 +27,10 @@ export class ImageController {
   ) { }
 
   @ApiQuery({ name: 'page', required: true, type: Number, description: 'Page number' })
-  @ApiHeader({ name: 'authorization', required: false, description: 'Bearer token for authorization', example : "Bearer..." })
+  @UseInterceptors(JwtDecodeNotRequired)
   @Get()
-  findAll(@Query("page", ParseIntPipe) page: number,@Headers('authorization') authHeader: string) {
-    let token = "";
-    if(authHeader){
-      token = authHeader.replace("Bearer ", "");
-    }
-    return this.imageService.findAll(page || 1, token);
+  findAll(@Query("page", ParseIntPipe) page: number,@Req() req : Request) {
+    return this.imageService.findAll(page || 1, req.user as TokenPayload | null);
   }
 
   @Get("/:id(\\d+)")

@@ -6,6 +6,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ImageLikeModule } from 'src/image-like/image-like.module';
 import { ImageSaveModule } from 'src/image-save/image-save.module';
+import { ImageModule } from 'src/image/image.module';
 
 @Module({
   controllers: [UserController],
@@ -14,6 +15,7 @@ import { ImageSaveModule } from 'src/image-save/image-save.module';
     UserFollowingModule,
     ImageLikeModule,
     ImageSaveModule,
+    ImageModule,
     JwtModule.register({})]
 })
 export class UserModule { }

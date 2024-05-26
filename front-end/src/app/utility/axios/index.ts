@@ -40,7 +40,7 @@ instanceAxios.interceptors.response.use((response) => {
     const originalRequest = error.config;
     if(error.response && error.response.data.message === "Refresh token is expired"){
         localStorageFn.deleteToken();
-        window.location.href = "/errors/401";
+        window.location.href = "/";
     }
     if(error.response && error.response.data.message === "Token expired"){
         try {
@@ -54,9 +54,6 @@ instanceAxios.interceptors.response.use((response) => {
             localStorageFn.deleteToken();
             return Promise.reject(err);
         }
-    }
-    if(error.response.status === 401){
-        window.location.href = "/errors/401";
     }
     return Promise.reject(error);
 })

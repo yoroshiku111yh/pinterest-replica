@@ -44,7 +44,7 @@ export default function LoginPopup(props: Props) {
       const response = await loginApi(data);
       if(response.data.length > 0){
         localStorageFn.token = response.data;
-        window.location.reload();
+        window.location.href= "/"
       }
     } catch (error: any) {
       if (error.statusCode === 404) {

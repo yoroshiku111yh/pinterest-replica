@@ -36,9 +36,21 @@ export class JwtStrategy extends PassportStrategy(Strategy, "myJwt") {
             if (payload.keyPair === decodeRefresh.keyPair) {
                 return payload;
             }
-            throw new UnauthorizedException();
+            throw new HttpException("Token expired", HttpStatus.UNAUTHORIZED);
         }
         catch (error) {
+            if (error.response === "Token expired") {
+                throw error; // Rethrow the UnauthorizedException
+            }
+            console.log(error);
+            await this.prisma.users.update({
+                where : {
+                    id : payload.id
+                },
+                data : {
+                    refresh_token : null
+                }
+            });
             throw new HttpException("Refresh token is expired", HttpStatus.UNAUTHORIZED);
         }
     }

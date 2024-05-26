@@ -1,4 +1,4 @@
-import { instanceAxios } from ".";
+import { instanceAxios, localStorageFn } from ".";
 
 
 export interface LoginDataType {
@@ -47,6 +47,22 @@ export const registerApi = async (registerData: RegisterDataType) => {
 export const refreshToken = async () => {
     try {
         const response = await instanceAxios.post(`/auth/refresh-token`);
+        return response;
+    }
+    catch (error: any) {
+        if (error.response) {
+            throw error.response.data;
+        } else {
+            throw error;
+        }
+    }
+}
+
+export const logoutApi = async () => {
+    try {
+        const response = await instanceAxios.post(`/auth/logout`);
+        localStorageFn.deleteToken();
+        window.location.href="/";
         return response;
     }
     catch (error: any) {

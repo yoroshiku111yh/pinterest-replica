@@ -13,7 +13,7 @@ export default function Info(props: { id: number }) {
       const { data } = await getInfoUserById(props.id);
       setData(data);
     } catch (err) {
-      console.log(err);
+      window.location.href = "/not-found";
     }
   };
   useEffect(() => {

@@ -15,6 +15,9 @@ import { ImageCategoryModule } from 'src/image-category/image-category.module';
     ImageLikeModule,
     ImageCategoryModule,
     CommentModule
+  ],
+  exports : [
+    ImageService
   ]
 })
 export class ImageModule { }
