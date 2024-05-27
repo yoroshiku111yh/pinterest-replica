@@ -45,9 +45,9 @@ export default function Page({ params }: { params: { idCate: string } }) {
   }, [page]);
   return (
     <>
-      {listData ? (
+      {(listData && listData.length > 0) ? (
         <>
-          <h3 className="text-2xl text-center">{cateData && cateData.name}</h3>
+          <h3 className="md:text-3xl text-2xl text-center uppercase font-bold pb-4">{cateData && cateData.name}</h3>
           <p>{cateData && cateData.description}</p>
           <MasonryLayout listPicture={listData} />
         </>
