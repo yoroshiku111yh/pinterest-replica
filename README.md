@@ -5,7 +5,8 @@
 - For course backend Nodejs by Framework Nestjs, upgrade with Frontend Nextjs
 
 
-
+## IMPORTANT
+### IF YOU ARE USING YARN V1 PLEASE RUN yarn add sharp --ignore-engines after yarn add TO REINSTALL sharp package when got error Could not load Sharp
 
 ## Backend
 - /backend
@@ -17,7 +18,7 @@
 - /front-end
 - Frontend : yarn dev
 - Port : 3000
-( check image id 49 for comment load scroll : http://localhost:3000/image/49 )
+- ( check image id 49 for comment load scroll : http://localhost:3000/image/49 )
 ## Database
 - /database/option-sql
 - Port : 3306 ( .env )
