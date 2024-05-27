@@ -61,6 +61,7 @@ export default function Page() {
   };
   useEffect(() => {
     fetchProfile();
+    window.document.title = "Edit info user"
   }, []);
   const onSubmit = handleSubmit(async (data) => {
     setSuccessMess(null);
@@ -151,12 +152,19 @@ export default function Page() {
                   {errors.age && errors.age.toString()}
                 </div>
               </div>
-              <div className="text-center pt-5">
+              <div className="text-center pt-5 flex flex-wrap gap-2">
                 <button
                   type="submit"
                   className="btn-border-style bg-green-600 text-white"
                 >
-                  Cập nhật
+                  Update
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {window.location.reload()}}
+                  className="btn-border-style bg-red-600 text-white"
+                >
+                  Refresh
                 </button>
               </div>
               <div className="text-center text-green-500 py-2">

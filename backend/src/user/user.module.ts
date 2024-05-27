@@ -10,8 +10,14 @@ import { ImageModule } from 'src/image/image.module';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService],
-  imports: [AuthModule,
+  providers: [UserService, 
+    {
+      provide: 'UPLOAD_PATH',
+      useValue : process.env.PATH_PUBLIC_IMAGE_AVATAR
+    }
+  ],
+  imports: [
+    AuthModule,
     UserFollowingModule,
     ImageLikeModule,
     ImageSaveModule,

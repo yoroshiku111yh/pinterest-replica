@@ -3,6 +3,11 @@ import LoadMasonryImages from "./LoadMasonryImages";
 import { ENV } from "@/app/utility/global-variable";
 import BlockInfoAndComment from "./BlockInfoAndComment";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Image",
+}
 
 async function getDataImage(id: number): Promise<any> {
   try {
@@ -26,6 +31,9 @@ export default async function Page({
   const data = await getDataImage(Number(params.imageId));
   if (!data) {
     redirect("/not-found");
+  }
+  else{
+    metadata.title = data.name;
   }
   return (
     <>

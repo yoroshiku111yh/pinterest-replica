@@ -52,7 +52,26 @@ main {
   .fit-cover {
     @apply w-full h-full object-cover;
   }
-  .masonry-images {
-    @apply columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-2 lg:columns-3 [&>div:not(:first-child)]:mt-8;
-  }
+  /* .masonry-images {
+    @apply columns-1 gap-5 sm:columns-2 sm:gap-6 md:columns-2 lg:columns-4 [&>div:not(:first-child)]:mt-8;
+  } */
+}
+
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -30px; /* gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 30px; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+  background: grey;
+  margin-bottom: 30px;
 }

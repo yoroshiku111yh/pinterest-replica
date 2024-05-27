@@ -64,13 +64,15 @@ export default function ListComment({
                   href={`user/${item.user_id}`}
                   className="w-10 block aspect-square rounded-full overflow-hidden bg-zinc-700"
                 >
-                  <Image
-                    alt="avatar"
-                    src={`${ENV.BASE_URL}/${item.users.avatar}`}
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-cover"
-                  />
+                  {item.users.avatar && (
+                    <Image
+                      alt="avatar"
+                      src={`${ENV.BASE_URL}/${item.users.avatar}`}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </Link>
               </div>
               <div>

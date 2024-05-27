@@ -9,8 +9,14 @@ import { ImageCategoryModule } from 'src/image-category/image-category.module';
 
 @Module({
   controllers: [ImageController],
-  providers: [ImageService],
-  imports: [JwtModule.register({}),
+  providers: [ImageService,
+    {
+      provide : "UPLOAD_PATH",
+      useValue : process.env.PATH_PUBLIC_IMAGE_UPLOAD
+    }
+  ],
+  imports: [
+    JwtModule.register({}),
     ImageSaveModule,
     ImageLikeModule,
     ImageCategoryModule,

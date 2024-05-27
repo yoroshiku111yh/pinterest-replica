@@ -28,7 +28,7 @@ export class GuardPermission implements CanActivate {
         }
         const data = await resource.findUnique({
             where: {
-                id: Number(params.id)
+                id: Number(params.id),
             }
         });
         if (!data) {

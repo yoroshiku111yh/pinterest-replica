@@ -96,11 +96,9 @@ export default function Header() {
                       height={100}
                     />
                   )}
-                  <span className="text-gray-600 font-medium truncate max-w-[7.5rem]">
-                    username
-                  </span>
+                  <span className="text-gray-600 font-medium truncate max-w-[7.5rem]"></span>
                   <svg
-                    className="hs-dropdown-open:rotate-180 size-4"
+                    className="hs-dropdown-open:rotate-180 size-4 hidden"
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"

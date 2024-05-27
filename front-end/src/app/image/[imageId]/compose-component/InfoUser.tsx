@@ -50,26 +50,28 @@ export default function InfoUserComponent() {
   return (
     <div className=" flex flex-row justify-between items-center gap-2">
       {infoUser && (
-        <div className="flex flex-row items-center gap-2">
-          <div>
-            <Link
-              href={`/user/${infoUser.info.id}`}
-              className="md:w-20 w-16 block aspect-square rounded-full overflow-hidden bg-zinc-700"
-            >
-              <Image
-                className="fit-cover"
-                src={ENV.BASE_URL + "/" + infoUser?.info.avatar}
-                alt="avatar"
-                width={80}
-                height={80}
-              />
-            </Link>
-          </div>
-          <div className="flex md:flex-row  flex-col gap-2 justify-between items-start">
+        <div className="flex flex-row items-center gap-2 justify-between flex-grow">
+          <div className="flex flex-row gap-2 justify-start items-center">
+            <div>
+              <Link
+                href={`/user/${infoUser.info.id}`}
+                className="md:w-20 w-16 block aspect-square rounded-full overflow-hidden bg-zinc-700"
+              >
+                {infoUser.info.avatar && (
+                  <Image
+                    className="fit-cover"
+                    src={ENV.BASE_URL + "/" + infoUser?.info.avatar}
+                    alt="avatar"
+                    width={80}
+                    height={80}
+                  />
+                )}
+              </Link>
+            </div>
             <div className="flex flex-col">
               <Link
                 href={`/user/${infoUser.info.id}`}
-                className="text-sm font-semibold"
+                className="text-sm font-semibold max-w-[150px]"
               >
                 {infoUser.info.fullname}
               </Link>
@@ -77,16 +79,15 @@ export default function InfoUserComponent() {
                 {followersData?.total || 0} Followers
               </div>
             </div>
-
-            {decode && infoUser?.info.id !== decode.id && (
-              <button
-                onClick={handleToggleFollow}
-                className="btn-border-style bg-zinc-200"
-              >
-                {isFollowed ? "Following" : "Follow"}
-              </button>
-            )}
           </div>
+          {decode && infoUser?.info.id !== decode.id && (
+            <button
+              onClick={handleToggleFollow}
+              className="btn-border-style bg-zinc-200"
+            >
+              {isFollowed ? "Following" : "Follow"}
+            </button>
+          )}
         </div>
       )}
     </div>

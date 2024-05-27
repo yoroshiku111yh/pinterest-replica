@@ -89,6 +89,7 @@ export class CategoryService {
             currentPage: page,
             pageSize: pageSize,
             totalPage: Math.ceil(total / pageSize),
+            cate : cate,
             data: imageList
         }
     }

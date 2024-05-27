@@ -4,7 +4,6 @@ import MasonryLayout from "@/app/components/MasonryLayout";
 import { getImagesByCateId } from "@/app/utility/axios/api.cates";
 import { ResponseDataPicture } from "@/app/utility/axios/api.image";
 import { useDebouncedScroll } from "@/app/utility/hooks/useDebounceScroll";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page({ params }: { params: { idCate: string } }) {
@@ -14,7 +13,7 @@ export default function Page({ params }: { params: { idCate: string } }) {
   const [listData, setListData] = useState<ResponseDataPicture[] | null>(null);
   const handleGetListPicture = async () => {
     try {
-      const { totalPage, data } = await getImagesByCateId(idCate, page);
+      const { totalPage, data, cate } = await getImagesByCateId(idCate, page);
       setMaxPage(totalPage);
       setListData((prevData) => {
         if (prevData) {
@@ -23,8 +22,10 @@ export default function Page({ params }: { params: { idCate: string } }) {
           return data;
         }
       });
-    } catch (err : any) {
-      if(err.statusCode == 404){
+
+      window.document.title = `Category : ${cate.name}`;
+    } catch (err: any) {
+      if (err.statusCode == 404) {
         window.location.href = "/not-found";
       }
     }

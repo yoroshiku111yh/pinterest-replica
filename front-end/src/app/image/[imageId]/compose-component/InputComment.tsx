@@ -4,8 +4,11 @@ import { ContextImageDetail } from "../BlockInfoAndComment";
 import useTokenDecode from "@/app/utility/hooks/useTokenDecode";
 import { ENV } from "@/app/utility/global-variable";
 import { useForm, Resolver } from "react-hook-form";
-import { FormCommentType, ResponseCommentType, postCommentToIdImage } from "@/app/utility/axios/api.comment";
-
+import {
+  FormCommentType,
+  ResponseCommentType,
+  postCommentToIdImage,
+} from "@/app/utility/axios/api.comment";
 
 const resolver: Resolver<FormCommentType> = async (values) => {
   const errors: Record<string, string> = {};
@@ -23,7 +26,7 @@ export default function BlockInputComment() {
   if (!dataContext) {
     throw new Error("Component need inside provider");
   }
-  const {idImage, setListComment} = dataContext;
+  const { idImage, setListComment } = dataContext;
   const { decode } = useTokenDecode();
   const {
     handleSubmit,
@@ -32,16 +35,16 @@ export default function BlockInputComment() {
     formState: { errors },
   } = useForm<FormCommentType>({ resolver });
   const onSubmit = handleSubmit(async (dataComment) => {
-    try{
-      const {data} = await postCommentToIdImage(dataComment, idImage);
-      if(decode){
+    try {
+      const { data } = await postCommentToIdImage(dataComment, idImage);
+      if (decode) {
         const obj: ResponseCommentType = {
           ...data,
           users: {
             id: decode.id,
             fullname: decode.fullname,
-            avatar: decode.avatar
-          }
+            avatar: decode.avatar,
+          },
         };
         setListComment((prevData: ResponseCommentType[] | null) => {
           if (prevData) {
@@ -52,8 +55,7 @@ export default function BlockInputComment() {
         });
         reset();
       }
-    }
-    catch(err){
+    } catch (err) {
       console.log(err);
     }
   });
@@ -62,13 +64,15 @@ export default function BlockInputComment() {
       {decode && (
         <div className="flex flex-row items-center gap-3 mt-3">
           <div className="w-10 block aspect-square rounded-full overflow-hidden bg-zinc-700">
-            <Image
-              src={`${ENV.BASE_URL}/${decode.avatar}`}
-              className="w-full h-full object-cover"
-              alt="avatar"
-              width={48}
-              height={48}
-            />
+            {decode.avatar && (
+              <Image
+                src={`${ENV.BASE_URL}/${decode.avatar}`}
+                className="w-full h-full object-cover"
+                alt="avatar"
+                width={48}
+                height={48}
+              />
+            )}
           </div>
           <div className="grow input-block relative flex flex-row gap-2">
             <input

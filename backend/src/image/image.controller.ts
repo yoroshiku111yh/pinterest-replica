@@ -63,6 +63,7 @@ export class ImageController {
       },
     },
   })
+
   @UseInterceptors(FileInterceptor("image", {
     storage: memoryStorage()
   }))

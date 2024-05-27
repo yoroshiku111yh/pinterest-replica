@@ -35,5 +35,9 @@ export default function Home() {
   useEffect(() => {
     handleGetListPicture();
   }, [page]);
-  return <>{listData && <MasonryLayout listPicture={listData} />}</>;
+  return (
+    <>
+      {listData && <MasonryLayout listPicture={listData} />}
+    </>
+  );
 }

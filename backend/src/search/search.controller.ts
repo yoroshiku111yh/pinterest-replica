@@ -1,6 +1,9 @@
-import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, HttpStatus, ParseIntPipe, Query, Req, UseInterceptors } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtDecodeNotRequired } from 'src/interceptors/decode-jwt-not-required';
+import { TokenPayload } from 'src/auth/dto/tokenPayload.dto';
+import { Request } from 'express';
 
 @ApiTags("Search")
 @Controller('search')
@@ -21,6 +24,13 @@ export class SearchController {
       }
     }
   }
+
+  @UseInterceptors(JwtDecodeNotRequired)
+  @Get("/image")
+  async findImageByName(@Query("search") searchKeyword : string, @Query("page", ParseIntPipe) page: number,@Req() req : Request){
+    return this.searchService.findImageByName(searchKeyword, req.user as TokenPayload | null, page);
+  }
+
   @Get("/categories")
   async findCate(@Query("search") searchKeyword: string) {
     return this.searchService.findCateByName(searchKeyword);

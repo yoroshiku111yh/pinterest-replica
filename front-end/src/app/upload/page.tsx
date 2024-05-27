@@ -101,6 +101,9 @@ const UploadImage = () => {
       setPreviewedImage(null);
     }
   };
+  useEffect(() => {
+    window.document.title = "Upload Image"
+  },[]);
   return (
     <form onSubmit={onSubmit}>
       <div className="flex flex-col md:flex-row gap-10 md:max-w-[1087px] m-auto px-4 py-7 bg-white rounded-xl shadow-md">

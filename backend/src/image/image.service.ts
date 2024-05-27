@@ -57,7 +57,11 @@ export class ImageService {
     const pageSize = 10;
     let userId = payload ? payload.id : 0;
     try {
-      const total = await this.prisma.images.count();
+      const total = await this.prisma.images.count({
+        where: {
+          deleted : false
+        }
+      });
       const index = (page - 1) * pageSize;
       const list = await this.prisma.images.findMany({
         where: {
@@ -244,7 +248,8 @@ export class ImageService {
     const pageSize = 10;
     const total = await this.prisma.images.count({
       where: {
-        user_id: idUser
+        user_id: idUser,
+        deleted : false
       }
     });
     const index = (page - 1) * pageSize;

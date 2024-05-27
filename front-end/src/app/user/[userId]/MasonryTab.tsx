@@ -96,7 +96,7 @@ const MasonryListPicture = ({
   const [listData, setListData] = useState<ResponseDataPicture[] | null>(null);
   const handleGetListPictureSaved = async () => {
     try {
-      const { data, totalPage } = await promiseCall(idUser, page);
+      const { data, totalPage, currentPage } = await promiseCall(idUser, page);
       setMaxPage(totalPage);
       setListData((prevData) => {
         if (prevData) {

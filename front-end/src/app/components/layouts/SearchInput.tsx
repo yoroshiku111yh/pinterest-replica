@@ -5,6 +5,7 @@ import { ResponseDataPicture } from "@/app/utility/axios/api.image";
 import { searchApi } from "@/app/utility/axios/api.search";
 import { debounce } from "lodash";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 
@@ -16,7 +17,6 @@ export default function SearchInput() {
   >([]);
   const [popup, setPopup] = useState<boolean>(false);
   const ref = useRef(null);
-
   const debounceSearch = useCallback(
     debounce(async (value: string) => {
       try {
@@ -31,6 +31,7 @@ export default function SearchInput() {
   );
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPopup(true);
     setSearch(e.target.value);
     debounceSearch(e.target.value);
   };
@@ -47,21 +48,36 @@ export default function SearchInput() {
   const handleClickLink = () => {
     setPopup(false);
     setSearch("");
-  }
-
+    document.body.style.overflow = "";
+  };
+  const router = useRouter();
+  const handleNavigateSearch = () => {
+    setPopup(false);
+    document.body.style.overflow = "";
+    router.replace(`/search?keyword=${search}`);
+  };
   useOnClickOutside(ref, handleClickOutside);
   return (
     <>
       <div ref={ref}>
-        <input
-          id="search-input"
-          className="w-full "
-          type="text"
-          placeholder="Tìm kiếm..."
-          value={search}
-          onFocus={handleClickInside}
-          onChange={onChange}
-        />
+        <form
+          onSubmit={(e) => {
+            if (search.length > 2) {
+              handleNavigateSearch();
+            }
+            e.preventDefault();
+          }}
+        >
+          <input
+            id="search-input"
+            className="w-full "
+            type="text"
+            placeholder="Tìm kiếm..."
+            value={search}
+            onFocus={handleClickInside}
+            onChange={onChange}
+          />
+        </form>
         {popup &&
           (searchedNameImage.length > 0 || searchedCates.length > 0) && (
             <>
@@ -74,7 +90,11 @@ export default function SearchInput() {
                           Search images :
                         </h6>
                         {searchedNameImage.map((item, index) => (
-                          <Link onClick={handleClickLink} href={`/image/${item.id}`} key={index}>
+                          <Link
+                            onClick={handleClickLink}
+                            href={`/image/${item.id}`}
+                            key={index}
+                          >
                             {item.name}
                           </Link>
                         ))}
@@ -88,7 +108,11 @@ export default function SearchInput() {
                           Search categories :
                         </h6>
                         {searchedCates.map((item, index) => (
-                          <Link onClick={handleClickLink} href={`/category/${item.id}`} key={index}>
+                          <Link
+                            onClick={handleClickLink}
+                            href={`/category/${item.id}`}
+                            key={index}
+                          >
                             {item.name}
                           </Link>
                         ))}

@@ -116,6 +116,9 @@ export default function Page({ params }: { params: { imageId: string } }) {
       cates: JSON.stringify(arIdCates),
     });
   });
+  useEffect(() => {
+    window.document.title = "Edit Image"
+  },[]);
   return (
     <>
       {(!decode || !infoImage) && <ErrorLayoutUnAuthor />}

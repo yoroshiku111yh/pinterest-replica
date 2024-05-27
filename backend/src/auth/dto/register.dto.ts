@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsNotEmpty, MaxLength } from "class-validator";
 
 // export class registerDto {
 //     //@ApiProperty({ type: 'string' })
@@ -8,6 +8,7 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 //     //@ApiProperty({ type: 'string' })
 //     password: string; // same as key upload
 // }
+
 
 export class registerDto {
     @ApiProperty({ example: "user@example.com" })
@@ -20,6 +21,7 @@ export class registerDto {
     password : string;
     ////
     @ApiProperty({ example: "elizabeth kiki" })
+    @MaxLength(30, { message: "Fullname cannot be longer than 30 characters" })
     @IsNotEmpty()
     fullname : string;
     ////

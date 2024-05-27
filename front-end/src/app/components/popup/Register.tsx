@@ -20,8 +20,8 @@ const resolver: Resolver<RegisterDataType> = async (values) => {
   if (values.password.length < 6) {
     errors.password = "Password must be at least 6 character long";
   }
-  if (values.fullname.length < 3) {
-    errors.fullname = "Fullname must be at least 3 character long";
+  if (values.fullname.length < 3 || values.fullname.length > 30) {
+    errors.fullname = "Fullname must be at least 3 character and below 30 characters long";
   }
   if (values.age < 10 || isNaN(values.age)) {
     errors.age = "Age is not valid";
@@ -50,7 +50,7 @@ export default function RegisterPopup(props: Props) {
       const response = await registerApi(data);
       if (response.data.length > 0) {
         localStorageFn.token = response.data;
-        window.location.reload();
+        window.location.href = "/";
       }
     } catch (error: any) {
       if (error.statusCode === 409) {
