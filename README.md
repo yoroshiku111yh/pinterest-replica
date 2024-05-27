@@ -23,6 +23,9 @@
 - /database/option-sql
 - Port : 3306 ( .env )
 - table name ( using in .env ) : pinterest_capstone_41
+## User dummy
+- user-upload1@gmail.com ( 123456 )
+- user-upload2@example.com ( 123456 )
 
 ## Tools
 #### Frontend
