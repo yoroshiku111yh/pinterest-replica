@@ -13,6 +13,7 @@
 - Backend :  yarn start:dev
 - Port : 8080
 - Api list ( Swagger ) : http://localhost:8080/swagger/
+- Đặc tả chức năng đề bài (https://github.com/yoroshiku111yh/pinterest-replica/blob/master/backend/README.md)
 
 ## Frontend
 - /front-end
