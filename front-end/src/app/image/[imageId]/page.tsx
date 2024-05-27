@@ -24,14 +24,14 @@ export default async function Page({
   params: { imageId: string };
 }) {
   const data = await getDataImage(Number(params.imageId));
-  if(!data){
+  if (!data) {
     redirect("/not-found");
   }
   return (
     <>
-      <div className=" bg-white lg:max-w-[1016px] m-auto h-[90vh] lg:min-h-[400px] rounded-lg overflow-hidden relative shadow-2xl">
-        <div className="flex flex-row h-full w-full">
-          <div className="flex justify-center items-center w-1/2">
+      <div className=" bg-white md:max-w-[1016px] m-auto md:h-[90vh] md:min-h-[400px] max-w-[100%] rounded-lg overflow-hidden relative shadow-2xl">
+        <div className="flex md:flex-row h-full w-full flex-col">
+          <div className="flex justify-center items-center md:w-1/2 w-full h-full md:pt-0 pt-10">
             <Image
               src={`${ENV.BASE_URL}/${data.url}`}
               alt={data.name}
@@ -41,10 +41,12 @@ export default async function Page({
               className="object-contain w-full h-full"
             />
           </div>
-          <BlockInfoAndComment
-            idImage={Number(params.imageId)}
-            idUser={data.user_id}
-          />
+          <div className="flex flex-col justify-between py-7 md:w-1/2 w-full md:h-auto h-[500px]">
+            <BlockInfoAndComment
+              idImage={Number(params.imageId)}
+              idUser={data.user_id}
+            />
+          </div>
         </div>
       </div>
       <div className="pt-10">

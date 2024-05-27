@@ -46,7 +46,7 @@ export default function BlockInfoAndComment(props: TypeProps) {
   };
   return (
     <ContextImageDetail.Provider value={obj}>
-      <div className="flex flex-col justify-between py-7 w-1/2">
+      <>
         <div className="flex flex-row justify-between items-center px-4">
           <div className="icon-circle-style shadow-none">
             <svg
@@ -104,7 +104,7 @@ export default function BlockInfoAndComment(props: TypeProps) {
           <LikesComponent />
           {decode && <BlockInputComment />}
         </div>
-      </div>
+      </>
     </ContextImageDetail.Provider>
   );
 }

@@ -31,7 +31,7 @@ export default function MasonryLayout(props: TypeProps) {
           key={index}
           className="rounded-xl overflow-hidden relative shadow-sm hover:shadow-lg"
         >
-          <div className="bg-black/45 opacity-0 hover:opacity-100 transition-opacity absolute top-0 left-0 w-full h-full flex flex-col justify-between items-end p-5">
+          <div className="md:bg-black/45 md:opacity-0 bg-black/25 opacity-100 hover:opacity-100 transition-opacity absolute top-0 left-0 w-full h-full flex flex-col justify-between items-end p-5">
             <Link
               href={`/image/${item.id}`}
               className="absolute top-0 left-0 w-full h-full z-10"

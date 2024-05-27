@@ -62,7 +62,7 @@ export default function LoginPopup(props: Props) {
         <div className="fixed bg-black/30 top-0 left-0 z-50 w-full h-full flex justify-center items-center overflow-auto">
           <div
             ref={ref}
-            className="w-[484px] rounded-2xl shadow-lg bg-white relative flex flex-col gap-4 px-4 py-5"
+            className="md:w-[484px] w-[90%] rounded-2xl shadow-lg bg-white relative flex flex-col gap-4 px-4 py-5"
           >
             <div className="text-center">
               <h6 className="text-2xl font-bold uppercase">Đăng nhập</h6>

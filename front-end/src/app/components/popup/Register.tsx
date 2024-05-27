@@ -64,10 +64,10 @@ export default function RegisterPopup(props: Props) {
   return (
     <>
       {popup ? (
-        <div className="fixed bg-black/30 top-0 left-0 z-50 w-full h-full flex justify-center items-center overflow-auto">
+        <div className="fixed bg-black/30 sm:py-0 py-20 top-0 left-0 z-50 w-full h-full flex justify-center items-center overflow-auto">
           <div
             ref={ref}
-            className="w-[484px] h-auto rounded-2xl shadow-lg bg-white relative flex flex-col gap-4 px-4 py-5"
+            className="md:w-[484px] w-[90%] h-auto rounded-2xl shadow-lg bg-white relative flex flex-col md:gap-4 gap-1 px-4 py-5"
           >
             <div className="text-center">
               <h6 className="text-2xl font-bold uppercase">Đăng ký</h6>

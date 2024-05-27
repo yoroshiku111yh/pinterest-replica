@@ -24,8 +24,8 @@ export default function InfoImageComponent() {
   }, []);
   return (
     <>
-      <h1 className="text-3xl font-semibold">{title}</h1>
-      <div className="text-base">{desc}</div>
+      <h1 className="md:text-3xl text-2xl font-semibold">{title}</h1>
+      <div className="md:text-base text-sm italic">{desc}</div>
     </>
   );
 }

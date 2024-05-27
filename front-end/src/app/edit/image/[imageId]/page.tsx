@@ -120,8 +120,8 @@ export default function Page({ params }: { params: { imageId: string } }) {
     <>
       {(!decode || !infoImage) && <ErrorLayoutUnAuthor />}
       {infoImage && (
-        <div className="flex flex-row gap-10 max-w-[1087px] m-auto px-4 py-7 bg-white rounded-xl shadow-md">
-          <div className=" w-1/2 flex flex-col gap-4">
+        <div className="flex md:flex-row gap-10 md:max-w-[1087px] flex-col m-auto px-4 py-7 bg-white rounded-xl shadow-md">
+          <div className=" md:w-1/2 w-full flex flex-col gap-4">
             <>
               <div className="relative rounded-2xl border-dashed border-2 border-slate-600 aspect-[8/10] bg-white flex justify-center flex-col items-center text-base relative">
                 <Image
@@ -134,7 +134,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
               </div>
             </>
           </div>
-          <div className="w-1/2 flex flex-col gap-7">
+          <div className="md:w-1/2 w-full flex flex-col md:gap-7 gap-4">
             {decode && decode.id === infoImage.user_id && (
               <div className="flex flex-row justify-end items-center">
                 <div
@@ -214,7 +214,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
                     </div>
                   )}
                 </div>
-                <div className="h-[180px] overflow-auto">
+                <div className="md:h-[180px] h-[120px] overflow-auto">
                   <div className="flex flex-row flex-wrap gap-2 pt-2 py-4">
                     {selectedCates.map(
                       (_cate: CatesTypeReponse, index: number) => {

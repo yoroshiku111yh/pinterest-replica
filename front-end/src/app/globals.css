@@ -21,7 +21,7 @@ body {
   color: black;
 }
 main {
-  @apply pt-24 px-10 pb-9 bg-neutral-100 min-h-svh;
+  @apply pt-24 md:px-10 md:pb-9 px-4 pb-[100px] bg-neutral-100 min-h-svh;
 }
 
 @layer utilities {
@@ -32,7 +32,7 @@ main {
 
 @layer components {
   .btn-border-style {
-    @apply min-w-16 whitespace-nowrap px-4 py-3 text-base text-center font-semibold rounded-3xl;
+    @apply md:min-w-16 whitespace-nowrap lg:px-4 lg:py-3 text-base text-center font-semibold rounded-3xl min-w-10 px-3 py-2;
   }
   .icon-circle-style {
     @apply rounded-full w-10 aspect-square p-2 bg-white shadow-md cursor-pointer flex items-center justify-center;
@@ -53,6 +53,6 @@ main {
     @apply w-full h-full object-cover;
   }
   .masonry-images {
-    @apply columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-3 lg:columns-4 [&>div:not(:first-child)]:mt-8;
+    @apply columns-1 gap-5 sm:columns-2 sm:gap-8 md:columns-2 lg:columns-3 [&>div:not(:first-child)]:mt-8;
   }
 }
