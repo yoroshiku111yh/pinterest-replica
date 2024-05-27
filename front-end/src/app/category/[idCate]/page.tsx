@@ -1,7 +1,7 @@
 "use client";
 
 import MasonryLayout from "@/app/components/MasonryLayout";
-import { getImagesByCateId } from "@/app/utility/axios/api.cates";
+import { CatesTypeReponse, getImagesByCateId } from "@/app/utility/axios/api.cates";
 import { ResponseDataPicture } from "@/app/utility/axios/api.image";
 import { useDebouncedScroll } from "@/app/utility/hooks/useDebounceScroll";
 import { useEffect, useState } from "react";
@@ -11,10 +11,12 @@ export default function Page({ params }: { params: { idCate: string } }) {
   const [page, setPage] = useState<number>(1);
   const [maxPage, setMaxPage] = useState<number>(Infinity);
   const [listData, setListData] = useState<ResponseDataPicture[] | null>(null);
+  const [cateData, setCate] = useState< CatesTypeReponse | null>(null);
   const handleGetListPicture = async () => {
     try {
       const { totalPage, data, cate } = await getImagesByCateId(idCate, page);
       setMaxPage(totalPage);
+      setCate(cate);
       setListData((prevData) => {
         if (prevData) {
           return [...prevData, ...data];
@@ -41,5 +43,21 @@ export default function Page({ params }: { params: { idCate: string } }) {
   useEffect(() => {
     handleGetListPicture();
   }, [page]);
-  return <>{listData && <MasonryLayout listPicture={listData} />}</>;
+  return (
+    <>
+      {listData ? (
+        <>
+          <h3 className="text-2xl text-center">{cateData && cateData.name}</h3>
+          <p>{cateData && cateData.description}</p>
+          <MasonryLayout listPicture={listData} />
+        </>
+      ) : (
+        <div className="justify-center items-center flex flex-col gap-3 w-screen h-[80vh] max-w-full">
+          <p className="text-2xl text-center">
+            Category don't have any picture :'(
+          </p>
+        </div>
+      )}
+    </>
+  );
 }
